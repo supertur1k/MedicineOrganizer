@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".pages.LoginPageActivity">
 
 
     <LinearLayout
@@ -30,7 +30,7 @@
             android:typeface="monospace" />
 
         <EditText
-            android:id="@+id/editTextTextEmailAddress"
+            android:id="@+id/userEmailLoginPageEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40sp"
@@ -44,7 +44,7 @@
             android:textColor="@color/customColor" />
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/userPasswordLoginPageEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40sp"
@@ -60,7 +60,7 @@
         <view
             android:id="@+id/buttonLogin"
             class="androidx.appcompat.widget.AppCompatButton"
-            android:layout_width="329dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40sp"
             android:layout_marginTop="15sp"
@@ -71,9 +71,9 @@
             android:textColor="#FFFFFFFF" />
 
         <view
-            android:id="@+id/buttonReq"
+            android:id="@+id/buttonSignUp"
             class="androidx.appcompat.widget.AppCompatButton"
-            android:layout_width="329dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40sp"
             android:layout_marginTop="15sp"
