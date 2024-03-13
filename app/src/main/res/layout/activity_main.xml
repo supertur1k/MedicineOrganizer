@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#0d8234"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="58dp">
@@ -20,9 +21,10 @@
             android:layout_height="58dp"
             android:fontFamily="monospace"
             android:text="Авторизация"
+            android:layout_marginTop="200sp"
             android:textAlignment="center"
             android:textAllCaps="false"
-            android:textColor="#26912A"
+            android:textColor="#FFFFFF"
             android:textSize="34sp"
             android:textStyle="bold"
             android:typeface="monospace" />
@@ -56,7 +58,7 @@
             android:textColor="@color/customColor" />
 
         <view
-            android:id="@+id/button"
+            android:id="@+id/buttonLogin"
             class="androidx.appcompat.widget.AppCompatButton"
             android:layout_width="329dp"
             android:layout_height="wrap_content"
@@ -66,6 +68,19 @@
             android:background="@drawable/button"
             android:padding="10sp"
             android:text="Войти"
+            android:textColor="#FFFFFFFF" />
+
+        <view
+            android:id="@+id/buttonReq"
+            class="androidx.appcompat.widget.AppCompatButton"
+            android:layout_width="329dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40sp"
+            android:layout_marginTop="15sp"
+            android:layout_marginRight="40sp"
+            android:background="@drawable/button_grey"
+            android:padding="10sp"
+            android:text="Зарегистрироваться"
             android:textColor="#FFFFFFFF" />
     </LinearLayout>
 
