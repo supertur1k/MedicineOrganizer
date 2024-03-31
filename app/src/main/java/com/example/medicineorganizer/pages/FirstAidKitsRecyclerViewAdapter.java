@@ -16,6 +16,10 @@ import java.util.List;
 
 public class FirstAidKitsRecyclerViewAdapter extends RecyclerView.Adapter<FirstAidKitsRecyclerViewAdapter.ViewHolder> {
 
+    public List<String> getStorage() {
+        return storage;
+    }
+
     private List<String> storage;
     private LayoutInflater layoutInflater;
     private ItemClickListener itemClickListener;

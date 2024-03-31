@@ -1,8 +1,5 @@
 package com.example.medicineorganizer.pages;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,14 +10,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.medicineorganizer.R;
-import com.example.medicineorganizer.Retrofit.RetrofitMedicineOrganizerServerService;
+import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
+import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.List;
 
 import dto.AppError;
-import dto.JwtRequest;
+import dto.FirstAidKit;
 import dto.JwtResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,45 +64,69 @@ public class LoginPageActivity extends AppCompatActivity {
 
         login_button.setOnClickListener(
                 v -> {
-                    RetrofitMedicineOrganizerServerService.getInstance()
-                            .getAuthApi()
-                            .createAuthToken(new JwtRequest(username.getText().toString(), user_password.getText().toString()))
-                            .enqueue(new Callback<JwtResponse>() {
-                                @Override
-                                public void onResponse(@NonNull Call<JwtResponse> call, @NonNull Response<JwtResponse> response) {
-                                    if (response.isSuccessful()) {
-                                        if (response.body() == null || response.body().getToken() == null || response.body().getId() == null ||
-                                                response.body().getToken().isEmpty()) {
-                                            Log.e("server error", "не пришел токен");
-                                            Toast.makeText(LoginPageActivity.this, "Произошла ошибка", Toast.LENGTH_SHORT).show();
-                                        };
-                                        editor.putString("token", response.body().getToken());
-                                        editor.putString("username", username.getText().toString());
-                                        editor.putLong("id", response.body().getId());
-                                        editor.apply();
+                    String editTextUsername = username.getText().toString();
+                    String userTextPassword = user_password.getText().toString();
+                    MedicineOrganizerServerService.authAndGetToken(editTextUsername, userTextPassword, new Callback<JwtResponse>() {
+                        @Override
+                        public void onResponse(@NonNull Call<JwtResponse> call, @NonNull Response<JwtResponse> response) {
+                            if (response.isSuccessful()) {
+                                if (MedicineOrganizerServerService.checkIfResponseBodyWithTokenIsEmpty(response)) {
+                                    Log.e("server error", "Не пришел токен");
+                                    Toast.makeText(LoginPageActivity.this, "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    editor.putString("token", response.body().getToken());
+                                    editor.putString("username", editTextUsername);
+                                    editor.putLong("id", response.body().getId());
+                                    editor.apply();
 
-                                        Intent intent = new Intent(LoginPageActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                    } else {
-                                        if (response.errorBody() != null) {
-                                            try {
-                                                Gson gson = new Gson();
-                                                AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
-                                                Toast.makeText(LoginPageActivity.this, appError.getMessage(), Toast.LENGTH_SHORT).show();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
+                                    MedicineOrganizerServerService.getFirstAndKitsByUsername(editTextUsername, new Callback<List<FirstAidKit>>() {
+                                        @Override
+                                        public void onResponse(@NonNull Call<List<FirstAidKit>> call, @NonNull Response<List<FirstAidKit>> response) {
+                                            if (response.isSuccessful()) {
+                                                FirstAidKitsDataHolder.getInstance().setFirstAidKits(response.body());
+                                                Intent intent = new Intent(LoginPageActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                            } else {
+                                                if (response.errorBody() != null) {
+                                                    try {
+                                                        Gson gson = new Gson();
+                                                        AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                                                        Toast.makeText(LoginPageActivity.this, appError.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        Log.e("error", "Не пришел ответ с аптечками с сервера");
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                } else {
+                                                    Toast.makeText(LoginPageActivity.this, "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                                                }
                                             }
-                                        } else {
-                                            Toast.makeText(LoginPageActivity.this, "Произошла ошибка", Toast.LENGTH_SHORT).show();
                                         }
-                                    }
-                                }
 
-                                @Override
-                                public void onFailure(@NonNull Call<JwtResponse> call, @NonNull Throwable t) {
-                                    t.printStackTrace();
+                                        @Override
+                                        public void onFailure(@NonNull Call<List<FirstAidKit>> call, @NonNull Throwable t) {
+                                            t.printStackTrace();
+                                        }
+                                    });
                                 }
-                            });
+                            } else {
+                                if (response.errorBody() != null) {
+                                    try {
+                                        Gson gson = new Gson();
+                                        AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                                        Toast.makeText(LoginPageActivity.this, appError.getMessage(), Toast.LENGTH_SHORT).show();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    Toast.makeText(LoginPageActivity.this, "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                        @Override
+                        public void onFailure(@NonNull Call<JwtResponse> call, @NonNull Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
                 }
         );
     }

@@ -3,7 +3,9 @@ package com.example.medicineorganizer.pages;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.Retrofit.RetrofitMedicineOrganizerServerService;
+import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -33,6 +36,9 @@ public class SignUpPageActivity extends AppCompatActivity {
     private Button sign_up_button;
     private TextView go_to_login_page;
 
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +47,9 @@ public class SignUpPageActivity extends AppCompatActivity {
     }
 
     public void addListenerOnButton() {
+        sharedPreferences = getSharedPreferences("medicine_organizer_client_user_storage", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         username = (EditText) findViewById(R.id.signUpPageUsernameEditText);
         user_email = (EditText) findViewById(R.id.signUpPageUserEmailEditText);
         user_password = (EditText) findViewById(R.id.signUpPageUserPasswordEditText);
@@ -65,13 +74,16 @@ public class SignUpPageActivity extends AppCompatActivity {
                                 @Override
                                 public void onResponse(@NonNull Call<UserDTO> call, @NonNull Response<UserDTO> response) {
                                     if (response.isSuccessful()) {
-                                        if (response.body() == null || response.body().getEmail() == null || response.body().getId() == null ||
-                                                response.body().getUsername().isEmpty()) {
+                                        if (MedicineOrganizerServerService.checkIfResponseBodyRegistrationIsEmpty(response)) {
                                             Log.e("server error", "Пришли некорректные данные");
                                             Toast.makeText(SignUpPageActivity.this, "Произошла ошибка", Toast.LENGTH_SHORT).show();
-                                        };
-                                        Intent intent = new Intent(SignUpPageActivity.this, MainActivity.class);
-                                        startActivity(intent);
+                                        } else {
+                                            editor.putString("username", response.body().getUsername());
+                                            editor.putLong("id", response.body().getId());
+                                            editor.apply();
+                                            Intent intent = new Intent(SignUpPageActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                        }
                                     } else {
                                         if (response.errorBody() != null) {
                                             try {

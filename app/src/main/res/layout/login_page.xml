@@ -31,6 +31,8 @@
 
         <EditText
             android:id="@+id/loginPageUsernameEditText"
+            android:drawableLeft="@drawable/ic_user"
+            android:drawablePadding="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Имя пользователя"
@@ -43,6 +45,8 @@
 
         <EditText
             android:id="@+id/loginPageUserPasswordEditText"
+            android:drawableLeft="@drawable/ic_password"
+            android:drawablePadding="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Пароль"

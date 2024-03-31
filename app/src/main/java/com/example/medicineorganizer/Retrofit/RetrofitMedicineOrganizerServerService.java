@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitMedicineOrganizerServerService {
     private static RetrofitMedicineOrganizerServerService retrofitMedicineOrganizerServerService;
     private static final String BASE_URL = "http://10.0.2.2:8080";
-    private Retrofit retrofit;
+    private final Retrofit retrofit;
 
     private RetrofitMedicineOrganizerServerService() {
         HttpLoggingInterceptor logsInterceptor = new HttpLoggingInterceptor();
@@ -31,8 +31,11 @@ public class RetrofitMedicineOrganizerServerService {
         return retrofitMedicineOrganizerServerService;
     }
 
-    public ApiService getAuthApi() {
-        return retrofit.create(ApiService.class);
+    public AuthService getAuthApi() {
+        return retrofit.create(AuthService.class);
     }
 
+    public ApiMainService getApiMainService() {
+        return retrofit.create(ApiMainService.class);
+    }
 }
