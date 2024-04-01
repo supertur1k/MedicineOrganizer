@@ -43,9 +43,11 @@
             <Button
                 android:id="@+id/addFakPageCreateButton"
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:layout_marginTop="32dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="22dp"
                 android:layout_marginBottom="32dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:backgroundTint="#64952B"
                 android:text="создать аптечку"
                 app:layout_constraintBottom_toBottomOf="parent"

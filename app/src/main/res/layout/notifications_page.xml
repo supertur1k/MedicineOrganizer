@@ -43,54 +43,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainPageButtonSettings" />
 
-    <Button
-        android:id="@+id/mainPageAddFirstAidKit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/saladGreen"
-        android:text="Добавить аптечку"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/mainPageDecorativeLine" />
-
-
-    <EditText
-        android:id="@+id/mainPageFilterEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/saladGreen"
-        android:hint="Поиск по названию"
-        android:maxLines="1"
-        android:textColor="@android:color/black"
-        android:textColorHint="@android:color/darker_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainPageAddFirstAidKit" />
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/mainPageRecyclerViewContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mainPageFilterEditText">
-
-            <!-- RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/mainPageRecyclerViewFirstAidKits"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/mainPageBottomNav"

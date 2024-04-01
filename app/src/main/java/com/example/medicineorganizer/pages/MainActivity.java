@@ -2,6 +2,7 @@ package com.example.medicineorganizer.pages;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,13 +13,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.actions.MainPageActions;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
     Button addFirstAidKitButton;
     Dialog dialog;
     // Элементы на странице
+
+    BottomNavigationView bottomNavigationView;
     RecyclerView recyclerView;
     FirstAidKitsRecyclerViewAdapter adapter;
 
@@ -64,9 +68,35 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
         //adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
 
+        bottomNavigationView = findViewById(R.id.mainPageBottomNav);
+        bottomNavigationView.setSelectedItemId(R.id.navBarMenuMain);
+        this.setBottomMenuListener();
+
         addListenerOnButton();
     }
 
+    private void setBottomMenuListener() {
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
+            switch (item.getItemId()) {
+                case R.id.navBarMenuNotifications:
+                    startActivity(new Intent(getApplicationContext(), NotificationsPage.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    return true;
+                case R.id.navBarMenuMain:
+                    return true;
+                case R.id.navBarMenuReminder:
+                    startActivity(new Intent(getApplicationContext(), NotificationsPage.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    return true;
+                case R.id.navBarMenuSettings:
+                    startActivity(new Intent(getApplicationContext(), NotificationsPage.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    return true;
+            }
+            return false;
+        });
+    }
     public void addListenerOnButton() {
         addFirstAidKitButton.setOnClickListener(
                 v -> {

@@ -26,6 +26,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".pages.NotificationsPage"
+            android:exported="false">
+            <intent-filter>
+                <action android:name=".NotificationsPage" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
 
         <activity
             android:name=".pages.LoginPageActivity"
