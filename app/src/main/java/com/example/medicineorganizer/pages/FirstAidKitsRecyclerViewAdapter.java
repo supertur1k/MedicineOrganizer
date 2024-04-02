@@ -20,6 +20,10 @@ public class FirstAidKitsRecyclerViewAdapter extends RecyclerView.Adapter<FirstA
         return storage;
     }
 
+    public void setStorage(List<String> storage) {
+        this.storage = storage;
+    }
+
     private List<String> storage;
     private LayoutInflater layoutInflater;
     private ItemClickListener itemClickListener;

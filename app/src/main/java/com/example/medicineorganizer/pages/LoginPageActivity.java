@@ -15,14 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
-import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.List;
 
 import dto.AppError;
-import dto.FirstAidKit;
 import dto.JwtResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,35 +75,8 @@ public class LoginPageActivity extends AppCompatActivity {
                                     editor.putString("username", editTextUsername);
                                     editor.putLong("id", response.body().getId());
                                     editor.apply();
-
-                                    MedicineOrganizerServerService.getFirstAndKitsByUsername(editTextUsername, new Callback<List<FirstAidKit>>() {
-                                        @Override
-                                        public void onResponse(@NonNull Call<List<FirstAidKit>> call, @NonNull Response<List<FirstAidKit>> response) {
-                                            if (response.isSuccessful()) {
-                                                FirstAidKitsDataHolder.getInstance().setFirstAidKits(response.body());
-                                                Intent intent = new Intent(LoginPageActivity.this, MainActivity.class);
-                                                startActivity(intent);
-                                            } else {
-                                                if (response.errorBody() != null) {
-                                                    try {
-                                                        Gson gson = new Gson();
-                                                        AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
-                                                        Toast.makeText(LoginPageActivity.this, appError.getMessage(), Toast.LENGTH_SHORT).show();
-                                                        Log.e("error", "Не пришел ответ с аптечками с сервера");
-                                                    } catch (IOException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                } else {
-                                                    Toast.makeText(LoginPageActivity.this, "Произошла ошибка", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(@NonNull Call<List<FirstAidKit>> call, @NonNull Throwable t) {
-                                            t.printStackTrace();
-                                        }
-                                    });
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent);
                                 }
                             } else {
                                 if (response.errorBody() != null) {

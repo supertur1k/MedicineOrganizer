@@ -8,13 +8,16 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -25,11 +28,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.actions.MainPageActions;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
+import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
+import dto.AppError;
 import dto.FirstAidKit;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +47,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyclerViewAdapter.ItemClickListener{
     DrawerLayout drawerLayout;
     ImageView menu;
+    TextView textNoFak;
     LinearLayout mainPage, notifications, reminder, logout;
     BottomNavigationView bottomNavigationView;
     Button addFirstAidKitButton;
@@ -66,12 +76,14 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
         dialog = new Dialog(MainActivity.this);
 
         recyclerView = findViewById(R.id.mainPageRecyclerViewFirstAidKits);
+        textNoFak = findViewById(R.id.mainPageNoFAKData);
+
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new FirstAidKitsRecyclerViewAdapter(this, MainPageActions.getArrayListOfFirstAidKitsNames());
         adapter.setClickListener(this);
-        //adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
 
+        fillFAKStorageWithValuesFromServer();
 
         addListenerOnButton();
     }
@@ -166,6 +178,8 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
                                         adapter.getStorage().add(firstAidKit.getName_of_the_first_aid_kit());
                                         adapter.notifyDataSetChanged();
                                         dialog.cancel();
+                                        textNoFak.setVisibility(View.GONE);
+                                        recyclerView.setVisibility(View.VISIBLE);
                                     }
                                 }
                             }
@@ -185,5 +199,38 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
     @Override
     public void onItemClick(View view, int position) {
         Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    private void fillFAKStorageWithValuesFromServer() {
+        MedicineOrganizerServerService.getFirstAndKitsByUsername(username, new Callback<List<FirstAidKit>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<FirstAidKit>> call, @NonNull Response<List<FirstAidKit>> response) {
+                if (response.isSuccessful()) {
+                    FirstAidKitsDataHolder.getInstance().setFirstAidKits(response.body());
+                    if (FirstAidKitsDataHolder.getInstance().getFirstAidKits().size() > 0) {
+                        adapter.setStorage(MainPageActions.getArrayListOfFirstAidKitsNames());
+                        adapter.notifyDataSetChanged();
+                        textNoFak.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            Gson gson = new Gson();
+                            AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                            Log.e("error", "Не пришел ответ с аптечками с сервера");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<FirstAidKit>> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }

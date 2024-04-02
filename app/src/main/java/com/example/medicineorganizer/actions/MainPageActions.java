@@ -1,17 +1,11 @@
 package com.example.medicineorganizer.actions;
 
-import com.example.medicineorganizer.Retrofit.RetrofitMedicineOrganizerServerService;
 import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dto.FirstAidKit;
-import dto.JwtRequest;
-import dto.JwtResponse;
-import dto.UserDTO;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainPageActions {
 
