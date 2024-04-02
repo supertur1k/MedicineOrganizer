@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/navBarMenuNotifications"
         android:title="Уведомления"
@@ -13,8 +12,4 @@
         android:id="@+id/navBarMenuReminder"
         android:title="График приема"
         android:icon="@drawable/ic_medications_reminder"/>
-    <item
-        android:id="@+id/navBarMenuSettings"
-        android:title="Настройки"
-        android:icon="@drawable/ic_settings"/>
 </menu>

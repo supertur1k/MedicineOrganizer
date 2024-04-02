@@ -14,17 +14,16 @@ import android.widget.LinearLayout;
 import com.example.medicineorganizer.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class NotificationsPage extends AppCompatActivity {
+public class ReminderPage extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     LinearLayout mainPage, notifications, reminder, logout;
     BottomNavigationView bottomNavigationView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notifications_page);
+        setContentView(R.layout.activity_reminder_page);
 
         this.setMenuClickListeners();
     }
@@ -39,12 +38,12 @@ public class NotificationsPage extends AppCompatActivity {
         logout = findViewById(R.id.logout);
 
         bottomNavigationView = findViewById(R.id.bottom_nav);
-        bottomNavigationView.setSelectedItemId(R.id.navBarMenuNotifications);
+        bottomNavigationView.setSelectedItemId(R.id.navBarMenuReminder);
         this.setBottomMenuListener();
         menu.setOnClickListener(v -> openDrawer(drawerLayout));
-        notifications.setOnClickListener(v -> recreate());
-        mainPage.setOnClickListener(v -> redirectActivity(NotificationsPage.this, MainActivity.class));
-        reminder.setOnClickListener(v -> redirectActivity(NotificationsPage.this, ReminderPage.class));
+        reminder.setOnClickListener(v -> recreate());
+        notifications.setOnClickListener(v -> redirectActivity(ReminderPage.this, NotificationsPage.class));
+        mainPage.setOnClickListener(v -> redirectActivity(ReminderPage.this, MainActivity.class));
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);
@@ -73,14 +72,14 @@ public class NotificationsPage extends AppCompatActivity {
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.navBarMenuNotifications:
+                    startActivity(new Intent(getApplicationContext(), NotificationsPage.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     return true;
                 case R.id.navBarMenuMain:
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     return true;
                 case R.id.navBarMenuReminder:
-                    startActivity(new Intent(getApplicationContext(), ReminderPage.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     return true;
             }
             return false;
