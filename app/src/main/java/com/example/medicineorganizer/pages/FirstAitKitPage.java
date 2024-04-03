@@ -8,14 +8,24 @@ import androidx.fragment.app.Fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.medicineorganizer.R;
+import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import dto.FirstAidKit;
 
 public class FirstAitKitPage extends AppCompatActivity {
 
+    TextView nameOfFak;
+    TextView descOfFak;
+    Button addMedicine;
+    TextView mainPageNoMedicinesData;
     DrawerLayout drawerLayout;
     ImageView menu;
     LinearLayout mainPage, notifications, reminder, logout;
@@ -27,9 +37,28 @@ public class FirstAitKitPage extends AppCompatActivity {
         setContentView(R.layout.activity_first_ait_kit_page);
         this.setMenuClickListeners();
 
+        addMedicine = findViewById(R.id.fakPageAddMedicine);
+        nameOfFak = findViewById(R.id.fakPageNameTextView);
+        descOfFak = findViewById(R.id.fakPageDescTextView);
+        this.setFakData();
+
+
+        mainPageNoMedicinesData = findViewById(R.id.fakPageNoMedicinesData);
 
     }
 
+    private void setFakData() {
+        FirstAidKit firstAidKit = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
+        if (firstAidKit.getName_of_the_first_aid_kit() != null &&
+                !firstAidKit.getName_of_the_first_aid_kit().isEmpty()) {
+            nameOfFak.setText("Аптечка: " + firstAidKit.getName_of_the_first_aid_kit());
+        }
+        if (firstAidKit.getDescription() != null &&
+                !firstAidKit.getDescription().isEmpty()) {
+            descOfFak.setText(firstAidKit.getDescription());
+            descOfFak.setVisibility(View.VISIBLE);
+        }
+    }
 
     private void setMenuClickListeners() {
         drawerLayout = findViewById(R.id.drawerLayout);

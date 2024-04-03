@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.actions.MainPageActions;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
+import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
 import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
         textNoFak = findViewById(R.id.mainPageNoFAKData);
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        adapter = new FirstAidKitsRecyclerViewAdapter(this, MainPageActions.getArrayListOfFirstAidKitsNames());
+        adapter = new FirstAidKitsRecyclerViewAdapter(this, FirstAidKitsDataHolder.getInstance().getFirstAidKits());
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
 
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
                                             .max(Long::compareTo);
                                     if (maxId.isPresent()) {
                                         FirstAidKit firstAidKit = new FirstAidKit(maxId.get(), nameFromEditText, descFromEditText, null);
-                                        adapter.getStorage().add(firstAidKit.getName_of_the_first_aid_kit());
+                                        adapter.getStorage().add(firstAidKit);
                                         adapter.notifyDataSetChanged();
                                         dialog.cancel();
                                         textNoFak.setVisibility(View.GONE);
@@ -198,9 +199,9 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
 
     @Override
     public void onItemClick(View view, int position) {
+        ActiveFirstAidKitDataHolder.getInstance().setFirstAidKit(adapter.getStorage().get(position));
         startActivity(new Intent(getApplicationContext(), FirstAitKitPage.class));
-        String nameOfFak = adapter.getStorage().get(position);
-        Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+        String nameOfFak = adapter.getStorage().get(position).getName_of_the_first_aid_kit();
     }
 
     private void fillFAKStorageWithValuesFromServer() {
@@ -210,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
                 if (response.isSuccessful()) {
                     FirstAidKitsDataHolder.getInstance().setFirstAidKits(response.body());
                     if (FirstAidKitsDataHolder.getInstance().getFirstAidKits().size() > 0) {
-                        adapter.setStorage(MainPageActions.getArrayListOfFirstAidKitsNames());
+                        adapter.setStorage(FirstAidKitsDataHolder.getInstance().getFirstAidKits());
                         adapter.notifyDataSetChanged();
                         textNoFak.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.VISIBLE);

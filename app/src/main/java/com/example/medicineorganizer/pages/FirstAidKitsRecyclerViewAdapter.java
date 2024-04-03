@@ -14,22 +14,24 @@ import com.example.medicineorganizer.R;
 
 import java.util.List;
 
+import dto.FirstAidKit;
+
 public class FirstAidKitsRecyclerViewAdapter extends RecyclerView.Adapter<FirstAidKitsRecyclerViewAdapter.ViewHolder> {
 
-    public List<String> getStorage() {
+    public List<FirstAidKit> getStorage() {
         return storage;
     }
 
-    public void setStorage(List<String> storage) {
+    public void setStorage(List<FirstAidKit> storage) {
         this.storage = storage;
     }
 
-    private List<String> storage;
+    private List<FirstAidKit> storage;
     private LayoutInflater layoutInflater;
     private ItemClickListener itemClickListener;
 
     // data is passed into the constructor
-    FirstAidKitsRecyclerViewAdapter(Context context, List<String> data) {
+    FirstAidKitsRecyclerViewAdapter(Context context, List<FirstAidKit> data) {
         this.layoutInflater = LayoutInflater.from(context);
         this.storage = data;
     }
@@ -45,8 +47,8 @@ public class FirstAidKitsRecyclerViewAdapter extends RecyclerView.Adapter<FirstA
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String firstAidKit = storage.get(position);
-        holder.firstAidKitName.setText(firstAidKit);
+        FirstAidKit firstAidKit = storage.get(position);
+        holder.firstAidKitName.setText(firstAidKit.getName_of_the_first_aid_kit());
         holder.firstAidKitImage.setImageResource(R.drawable.first_aid_kit_image);
 
     }
@@ -77,7 +79,7 @@ public class FirstAidKitsRecyclerViewAdapter extends RecyclerView.Adapter<FirstA
     }
 
     // convenience method for getting data at click position
-    String getItem(int id) {
+    FirstAidKit getItem(int id) {
         return storage.get(id);
     }
 
