@@ -1,4 +1,4 @@
-package com.example.medicineorganizer.pages;
+package com.example.medicineorganizer.recyclerVies;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -31,7 +31,7 @@ public class FirstAidKitsRecyclerViewAdapter extends RecyclerView.Adapter<FirstA
     private ItemClickListener itemClickListener;
 
     // data is passed into the constructor
-    FirstAidKitsRecyclerViewAdapter(Context context, List<FirstAidKit> data) {
+    public FirstAidKitsRecyclerViewAdapter(Context context, List<FirstAidKit> data) {
         this.layoutInflater = LayoutInflater.from(context);
         this.storage = data;
     }
@@ -84,7 +84,7 @@ public class FirstAidKitsRecyclerViewAdapter extends RecyclerView.Adapter<FirstA
     }
 
     // allows clicks events to be caught
-    void setClickListener(ItemClickListener itemClickListener) {
+    public void setClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 

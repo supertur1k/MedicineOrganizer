@@ -21,20 +21,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.medicineorganizer.R;
-import com.example.medicineorganizer.actions.MainPageActions;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
 import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
+import com.example.medicineorganizer.recyclerVies.FirstAidKitsRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
