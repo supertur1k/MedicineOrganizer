@@ -44,6 +44,14 @@ public class MedicineOrganizerServerService {
                 .enqueue(callback);
     }
 
+    public static void deleteMedicamentForUser(Long id, String name, Callback<Collection<Medicament>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .addMedicamentIntoFirstAndKitByBarcode(id, name)
+                .enqueue(callback);
+    }
+
+
     public static void createFirstAndKitForUser(String username, String name, String description, Callback<Collection<FirstAidKit>> callback) {
         RetrofitMedicineOrganizerServerService.getInstance()
                 .getApiMainService()

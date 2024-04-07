@@ -9,6 +9,7 @@ import dto.FirstAidKitCreateRequestDTO;
 import dto.Medicament;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -24,4 +25,6 @@ public interface ApiMainService {
     @POST("/addMedicamentIntoFirstAndKitByBarcode")
     Call<Collection<Medicament>> addMedicamentIntoFirstAndKitByBarcode(@Body AddMedicamentIntoFAKBarcodeRequest addMedicamentIntoFAKBarcodeRequest);
 
+    @DELETE("/hardDeleteMedicamentForUser")
+    Call<Collection<Medicament>> addMedicamentIntoFirstAndKitByBarcode(@Query("id") Long id, @Query("medicament_name") String medicament_name);
 }

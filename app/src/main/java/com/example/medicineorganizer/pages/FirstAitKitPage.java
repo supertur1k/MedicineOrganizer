@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,6 +64,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     Dialog dialogMedicament;
 
     Dialog progressDialog;
+    FirstAidKit firstAitKitFromStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +89,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
         setVisibilityIfMedicamentDataSetIsNotEmpty();
 
-        FirstAidKit firstAitKit = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
+        firstAitKitFromStorage = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
         addListenerOnButton();
     }
 
@@ -103,26 +105,27 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     }
 
     private void showMedicamentDialog(Medicament medicament) {
-        dialog.setContentView(R.layout.check_medicament);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(true);
-        ImageButton close = dialog.findViewById(R.id.showMedicamentCloseButton);
-        close.setOnClickListener(v -> {dialog.cancel();});
+        dialogMedicament.setContentView(R.layout.check_medicament);
+        dialogMedicament.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogMedicament.setCancelable(true);
+        ImageButton close = dialogMedicament.findViewById(R.id.showMedicamentCloseButton);
+        close.setOnClickListener(v -> {dialogMedicament.cancel();});
 
-        TextView name = (TextView) dialog.findViewById(R.id.viewPageMedicamentNameValue);
-        TextView releaseForm = (TextView) dialog.findViewById(R.id.viewPageMedicamentReleaseForm);
-        TextView releaseFormValue = (TextView) dialog.findViewById(R.id.viewPageMedicamentReleaseFormValue);
-        TextView amount = (TextView) dialog.findViewById(R.id.viewPageMedicamentAmount);
-        TextView amountValue = (TextView) dialog.findViewById(R.id.viewPageAmountValue);
-        TextView directionsValue = (TextView) dialog.findViewById(R.id.viewPageDirectionsForUseValue);
-        ConstraintLayout viewPageDirectionsForUseLayout = (ConstraintLayout) dialog.findViewById(R.id.viewPageDirectionsForUseLayout);
+        TextView name = (TextView) dialogMedicament.findViewById(R.id.viewPageMedicamentNameValue);
+        TextView releaseForm = (TextView) dialogMedicament.findViewById(R.id.viewPageMedicamentReleaseForm);
+        TextView releaseFormValue = (TextView) dialogMedicament.findViewById(R.id.viewPageMedicamentReleaseFormValue);
+        TextView amount = (TextView) dialogMedicament.findViewById(R.id.viewPageMedicamentAmount);
+        TextView amountValue = (TextView) dialogMedicament.findViewById(R.id.viewPageAmountValue);
+        TextView directionsValue = (TextView) dialogMedicament.findViewById(R.id.viewPageDirectionsForUseValue);
+        ConstraintLayout viewPageDirectionsForUseLayout = (ConstraintLayout) dialogMedicament.findViewById(R.id.viewPageDirectionsForUseLayout);
 
-        TextView indicationsValue = (TextView) dialog.findViewById(R.id.viewPageIndicationsValue);
-        ConstraintLayout indicationsValueConstraintLayout = (ConstraintLayout) dialog.findViewById(R.id.viewPageIndicationsForUseLayout);
+        TextView indicationsValue = (TextView) dialogMedicament.findViewById(R.id.viewPageIndicationsValue);
+        ConstraintLayout indicationsValueConstraintLayout = (ConstraintLayout) dialogMedicament.findViewById(R.id.viewPageIndicationsForUseLayout);
 
-        TextView contraindicationsValue = (TextView) dialog.findViewById(R.id.viewPageContraIndicationsValue);
-        ConstraintLayout contraindicationsForUseLayout = (ConstraintLayout) dialog.findViewById(R.id.viewPageContraindicationsForUseLayout);
+        TextView contraindicationsValue = (TextView) dialogMedicament.findViewById(R.id.viewPageContraIndicationsValue);
+        ConstraintLayout contraindicationsForUseLayout = (ConstraintLayout) dialogMedicament.findViewById(R.id.viewPageContraindicationsForUseLayout);
 
+        Button deleteMedicamentButton = (Button) dialogMedicament.findViewById(R.id.viewPageDeleteMedicamentButton);
 
         name.setText(medicament.getName());
 
@@ -152,7 +155,29 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
             contraindicationsValue.setText(medicament.getContraindications());
             contraindicationsForUseLayout.setVisibility(View.VISIBLE);
         }
-        dialog.show();
+
+        deleteMedicamentButton.setOnClickListener(v -> {
+            MedicineOrganizerServerService.deleteMedicamentForUser(firstAitKitFromStorage.getId(), medicament.getName(), new Callback<Collection<Medicament>>() {
+                @Override
+                public void onResponse(Call<Collection<Medicament>> call, Response<Collection<Medicament>> response) {
+                    if (response.isSuccessful()) {
+                        Collection<Medicament> responseBody = response.body();
+                        adapter.setStorage(responseBody);
+                        adapter.notifyDataSetChanged();
+                        ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().setMedicaments(responseBody);
+                        dialogMedicament.cancel();
+                    } else {
+                        Log.e("not successful deleting", response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Collection<Medicament>> call, Throwable t) {
+                    Log.e("error", t.getMessage());
+                }
+            });
+        });
+        dialogMedicament.show();
     }
     public interface ItemClickListener {
         void onItemClick(View view, int position);
@@ -229,8 +254,8 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
     private void showProgressDialog() {
         progressDialog = new Dialog(this);
-        progressDialog.setContentView(R.layout.progress_dialog_layout); // Замените на свой макет для индикатора загрузки
-        progressDialog.setCancelable(false); // Запретить закрытие диалога при нажатии на кнопку "Назад"
+        progressDialog.setContentView(R.layout.progress_dialog_layout);
+        progressDialog.setCancelable(false);
         progressDialog.show();
     }
 
