@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.medicineorganizer.R;
 
+import java.util.Collection;
 import java.util.List;
 
 import dto.Medicament;
@@ -24,6 +25,10 @@ public class MedicinesRecyclerViewAdapter extends RecyclerView.Adapter<Medicines
 
     public void setStorage(List<Medicament> storage) {
         this.storage = storage;
+    }
+
+    public void setStorage(Collection<Medicament> storage) {
+        this.storage = (List<Medicament>) storage;
     }
 
     private List<Medicament> storage;

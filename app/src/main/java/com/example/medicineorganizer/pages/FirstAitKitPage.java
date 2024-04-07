@@ -58,6 +58,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     BottomNavigationView bottomNavigationView;
     Dialog dialog;
 
+    Dialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,20 +75,23 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
         mainPageNoMedicinesData = findViewById(R.id.fakPageNoMedicinesData);
         recyclerView = findViewById(R.id.fakPageRecyclerViewMedicines);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new MedicinesRecyclerViewAdapter(this, (List) ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicaments());
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
 
-        if (ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicaments().size() > 0) {
-            mainPageNoMedicinesData.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
+        setVisibilityIfMedicamentDataSetIsNotEmpty();
 
         FirstAidKit firstAitKit = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
         addListenerOnButton();
     }
 
+    private void setVisibilityIfMedicamentDataSetIsNotEmpty() {
+        if (ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicaments().size() > 0) {
+            mainPageNoMedicinesData.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
     @Override
     public void onItemClick(View view, int position) {
         //ActiveFirstAidKitDataHolder.getInstance().setFirstAidKit(adapter.getStorage().get(position).);
@@ -170,6 +174,19 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
         integrator.initiateScan();
     }
 
+    private void showProgressDialog() {
+        progressDialog = new Dialog(this);
+        progressDialog.setContentView(R.layout.progress_dialog_layout); // Замените на свой макет для индикатора загрузки
+        progressDialog.setCancelable(false); // Запретить закрытие диалога при нажатии на кнопку "Назад"
+        progressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -179,20 +196,44 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
             IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (result != null) {
                 if (result.getContents() == null) {
-                    //dialog.cancel();
                 } else {
-                    dialog.cancel();
                     String barcode = result.getContents();
-                    // Ваш код для обработки строки штрихкода
-                    Toast.makeText(this, "Штрихкод: " + barcode, Toast.LENGTH_SHORT).show();
-                    // Теперь, когда у вас есть результат сканирования, вы можете использовать его в вашем приложении
-                    // Например, можно использовать его для автозаполнения полей в диалоговом окне или для чего-то еще
+                    showProgressDialog();
+                    addMedicamentByBarcodeServer(barcode);
                 }
             } else {
                 super.onActivityResult(requestCode, resultCode, data);
             }
+
         }
     }
+
+    private void addMedicamentByBarcodeServer(String barcode) {
+        MedicineOrganizerServerService
+                .setMedicamentByBarcode(ActiveFirstAidKitDataHolder
+                        .getInstance().getFirstAidKit().getId(), barcode, new Callback<Collection<Medicament>>() {
+                    @Override
+                    public void onResponse(Call<Collection<Medicament>> call, Response<Collection<Medicament>> response) {            hideProgressDialog(); // Скрыть диалог загрузки после получения ответа от сервера
+                        hideProgressDialog();
+                        if (response.isSuccessful()) {
+                            adapter.setStorage(response.body());
+                            ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().setMedicaments(response.body());
+                            adapter.notifyDataSetChanged();
+                            setVisibilityIfMedicamentDataSetIsNotEmpty();
+                            dialog.cancel();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Collection<Medicament>> call, Throwable t) {
+                        hideProgressDialog();
+                        Toast.makeText(getApplicationContext(), "Произошла ошибка при попытке сканирования штрихкода", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+    }
+
     private void setFakData() {
         FirstAidKit firstAidKit = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
         if (firstAidKit.getName_of_the_first_aid_kit() != null &&

@@ -10,10 +10,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
 import dto.JwtRequest;
 import dto.JwtResponse;
+import dto.Medicament;
 import dto.UserDTO;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,6 +34,13 @@ public class MedicineOrganizerServerService {
         RetrofitMedicineOrganizerServerService.getInstance()
                 .getApiMainService()
                 .getFirstAndKitsByUsername(username)
+                .enqueue(callback);
+    }
+
+    public static void setMedicamentByBarcode(Long id, String barcode, Callback<Collection<Medicament>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .addMedicamentIntoFirstAndKitByBarcode(new AddMedicamentIntoFAKBarcodeRequest(id, barcode))
                 .enqueue(callback);
     }
 

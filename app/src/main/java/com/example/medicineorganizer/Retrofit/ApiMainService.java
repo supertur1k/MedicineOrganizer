@@ -6,6 +6,7 @@ import java.util.List;
 import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
+import dto.Medicament;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -21,6 +22,6 @@ public interface ApiMainService {
     Call<Collection<FirstAidKit>> createFirstAndKitForUser(@Body FirstAidKitCreateRequestDTO firstAidKitCreateRequestDTO);
 
     @POST("/addMedicamentIntoFirstAndKitByBarcode")
-    Call<Collection<FirstAidKit>> addMedicamentIntoFirstAndKitByBarcode(@Body AddMedicamentIntoFAKBarcodeRequest addMedicamentIntoFAKBarcodeRequest);
+    Call<Collection<Medicament>> addMedicamentIntoFirstAndKitByBarcode(@Body AddMedicamentIntoFAKBarcodeRequest addMedicamentIntoFAKBarcodeRequest);
 
 }
