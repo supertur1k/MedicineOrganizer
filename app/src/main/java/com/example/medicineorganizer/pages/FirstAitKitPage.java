@@ -5,6 +5,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,6 +30,8 @@ import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.example.medicineorganizer.recyclerVies.FirstAidKitsRecyclerViewAdapter;
 import com.example.medicineorganizer.recyclerVies.MedicinesRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,6 +83,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
             mainPageNoMedicinesData.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
+
         FirstAidKit firstAitKit = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
         addListenerOnButton();
     }
@@ -105,17 +110,19 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     }
 
     private void showCreateFAKDialogWindow() {
-        dialog.setContentView(R.layout.create_medicament);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(true);
-        EditText name = (EditText) dialog.findViewById(R.id.addMedicamentPageName);
-        EditText desc = (EditText) dialog.findViewById(R.id.addMedicamentPageDescription);
+            dialog.setContentView(R.layout.create_medicament);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.setCancelable(true);
+            EditText name = (EditText) dialog.findViewById(R.id.addMedicamentPageName);
+            EditText desc = (EditText) dialog.findViewById(R.id.addMedicamentPageDescription);
+            ImageButton qr = dialog.findViewById(R.id.addMedicamentPageQrScanner);
+
         Button addButton = (Button) dialog.findViewById(R.id.addMedicamentPageCreateButton);
 
         addButton.setOnClickListener(
                 v -> {
                     if (name.getText().toString().isEmpty()) {
-                        Toast.makeText(FirstAitKitPage.this, "Введите название препарата", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Введите название препарата", Toast.LENGTH_SHORT).show();
                     } else {
                         String nameFromEditText = name.getText().toString();
                         String descFromEditText = desc.getText().toString();
@@ -146,7 +153,45 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
                 }
         );
 
+
+        qr.setOnClickListener(v -> {
+            startBarcodeScanner();
+
+        });
+
         dialog.show();
+    }
+
+    private void startBarcodeScanner() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setOrientationLocked(false);
+        integrator.setPrompt("Пожалуйста, прицельтесь к штрихкоду на упаковке лекарства");
+        integrator.setBeepEnabled(true);
+        integrator.initiateScan();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == IntentIntegrator.REQUEST_CODE) {
+            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (result != null) {
+                if (result.getContents() == null) {
+                    //dialog.cancel();
+                } else {
+                    dialog.cancel();
+                    String barcode = result.getContents();
+                    // Ваш код для обработки строки штрихкода
+                    Toast.makeText(this, "Штрихкод: " + barcode, Toast.LENGTH_SHORT).show();
+                    // Теперь, когда у вас есть результат сканирования, вы можете использовать его в вашем приложении
+                    // Например, можно использовать его для автозаполнения полей в диалоговом окне или для чего-то еще
+                }
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
     private void setFakData() {
         FirstAidKit firstAidKit = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();

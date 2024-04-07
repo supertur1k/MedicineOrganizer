@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView textNoFak;
+    EditText fakSearchInput;
     LinearLayout mainPage, notifications, reminder, logout;
     BottomNavigationView bottomNavigationView;
     Button addFirstAidKitButton;
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
         recyclerView.setAdapter(adapter);
 
         fillFAKStorageWithValuesFromServer();
+
+        fakSearchInput = findViewById(R.id.mainPageFilterEditText);
 
         addListenerOnButton();
     }
@@ -179,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
                                         dialog.cancel();
                                         textNoFak.setVisibility(View.GONE);
                                         recyclerView.setVisibility(View.VISIBLE);
+                                        fillFAKStorageWithValuesFromServer();
                                     }
                                 }
                             }
@@ -213,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
                         adapter.notifyDataSetChanged();
                         textNoFak.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.VISIBLE);
+                        fakSearchInput.setVisibility(View.VISIBLE);
                     }
                 } else {
                     if (response.errorBody() != null) {
