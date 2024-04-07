@@ -1,6 +1,7 @@
 package com.example.medicineorganizer.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -57,6 +60,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     LinearLayout mainPage, notifications, reminder, logout;
     BottomNavigationView bottomNavigationView;
     Dialog dialog;
+    Dialog dialogMedicament;
 
     Dialog progressDialog;
 
@@ -72,6 +76,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
         addMedicine = findViewById(R.id.fakPageAddMedicine);
         dialog = new Dialog(FirstAitKitPage.this);
+        dialogMedicament = new Dialog(FirstAitKitPage.this);
 
         mainPageNoMedicinesData = findViewById(R.id.fakPageNoMedicinesData);
         recyclerView = findViewById(R.id.fakPageRecyclerViewMedicines);
@@ -94,13 +99,61 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     }
     @Override
     public void onItemClick(View view, int position) {
-        //ActiveFirstAidKitDataHolder.getInstance().setFirstAidKit(adapter.getStorage().get(position).);
-        //startActivity(new Intent(getApplicationContext(), FirstAitKitPage.class));
-        Toast.makeText(FirstAitKitPage.this, "Вы нажали на " + adapter.getStorage().get(position).getName(), Toast.LENGTH_SHORT).show();
-
-        String nameOfMedicine = adapter.getStorage().get(position).getName();
+        showMedicamentDialog(adapter.getStorage().get(position));
     }
 
+    private void showMedicamentDialog(Medicament medicament) {
+        dialog.setContentView(R.layout.check_medicament);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(true);
+        ImageButton close = dialog.findViewById(R.id.showMedicamentCloseButton);
+        close.setOnClickListener(v -> {dialog.cancel();});
+
+        TextView name = (TextView) dialog.findViewById(R.id.viewPageMedicamentNameValue);
+        TextView releaseForm = (TextView) dialog.findViewById(R.id.viewPageMedicamentReleaseForm);
+        TextView releaseFormValue = (TextView) dialog.findViewById(R.id.viewPageMedicamentReleaseFormValue);
+        TextView amount = (TextView) dialog.findViewById(R.id.viewPageMedicamentAmount);
+        TextView amountValue = (TextView) dialog.findViewById(R.id.viewPageAmountValue);
+        TextView directionsValue = (TextView) dialog.findViewById(R.id.viewPageDirectionsForUseValue);
+        ConstraintLayout viewPageDirectionsForUseLayout = (ConstraintLayout) dialog.findViewById(R.id.viewPageDirectionsForUseLayout);
+
+        TextView indicationsValue = (TextView) dialog.findViewById(R.id.viewPageIndicationsValue);
+        ConstraintLayout indicationsValueConstraintLayout = (ConstraintLayout) dialog.findViewById(R.id.viewPageIndicationsForUseLayout);
+
+        TextView contraindicationsValue = (TextView) dialog.findViewById(R.id.viewPageContraIndicationsValue);
+        ConstraintLayout contraindicationsForUseLayout = (ConstraintLayout) dialog.findViewById(R.id.viewPageContraindicationsForUseLayout);
+
+
+        name.setText(medicament.getName());
+
+        if (medicament.getReleaseForm() != null && !medicament.getReleaseForm().isEmpty()) {
+            releaseForm.setVisibility(View.VISIBLE);
+            releaseFormValue.setText(medicament.getReleaseForm());
+            releaseFormValue.setVisibility(View.VISIBLE);
+        }
+
+        if (medicament.getAmount() != null && !medicament.getAmount().isEmpty()) {
+            amount.setVisibility(View.VISIBLE);
+            amountValue.setText(medicament.getAmount());
+            amountValue.setVisibility(View.VISIBLE);
+        }
+
+        if (medicament.getDirectionsForUse() != null && !medicament.getDirectionsForUse().isEmpty()) {
+            directionsValue.setText(medicament.getDirectionsForUse());
+            viewPageDirectionsForUseLayout.setVisibility(View.VISIBLE);
+        }
+
+        if (medicament.getIndicationsForUse() != null && !medicament.getIndicationsForUse().isEmpty()) {
+            indicationsValue.setText(medicament.getIndicationsForUse());
+            indicationsValueConstraintLayout.setVisibility(View.VISIBLE);
+        }
+
+        if (medicament.getContraindications() != null && !medicament.getContraindications().isEmpty()) {
+            contraindicationsValue.setText(medicament.getContraindications());
+            contraindicationsForUseLayout.setVisibility(View.VISIBLE);
+        }
+        dialog.show();
+    }
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }
@@ -114,12 +167,12 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     }
 
     private void showCreateFAKDialogWindow() {
-            dialog.setContentView(R.layout.create_medicament);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.setCancelable(true);
-            EditText name = (EditText) dialog.findViewById(R.id.addMedicamentPageName);
-            EditText desc = (EditText) dialog.findViewById(R.id.addMedicamentPageDescription);
-            ImageButton qr = dialog.findViewById(R.id.addMedicamentPageQrScanner);
+        dialog.setContentView(R.layout.create_medicament);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(true);
+        EditText name = (EditText) dialog.findViewById(R.id.addMedicamentPageName);
+        EditText desc = (EditText) dialog.findViewById(R.id.addMedicamentPageDescription);
+        ImageButton qr = dialog.findViewById(R.id.addMedicamentPageQrScanner);
 
         Button addButton = (Button) dialog.findViewById(R.id.addMedicamentPageCreateButton);
 
