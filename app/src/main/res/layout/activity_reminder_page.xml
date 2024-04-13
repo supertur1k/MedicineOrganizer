@@ -30,12 +30,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_included">
 
-
             <TextView
                 android:id="@+id/reminderPageTextViewNoSchedules"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:textStyle="bold"
                 android:text="Добавить график приема с систему:"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -58,31 +58,64 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/reminderPageRecyclerViewContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/reminderPageCLFirstBlock"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_nav">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reminderPageRecyclerViewSchedules"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/reminderPageNoSchedulesView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="Пока что у вас нет добавленных графиков приема лекарств."
+                android:textSize="18sp"
+                android:textStyle="italic"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_nav"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:background="@color/saladGreen"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/bottom_nav_menu" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
     <RelativeLayout
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:layout_gravity = "start">
-
-        <include
-            layout="@layout/navigation_drawer"/>
-
+        android:layout_gravity="start">
+        <include layout="@layout/navigation_drawer"/>
     </RelativeLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

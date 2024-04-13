@@ -5,7 +5,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,25 +21,19 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
-import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
-import com.example.medicineorganizer.recyclerVies.FirstAidKitsRecyclerViewAdapter;
 import com.example.medicineorganizer.recyclerVies.MedicinesRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import dto.FirstAidKit;
 import dto.Medicament;

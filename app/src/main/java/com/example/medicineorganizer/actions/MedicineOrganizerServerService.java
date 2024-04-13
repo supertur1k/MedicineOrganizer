@@ -16,6 +16,8 @@ import dto.FirstAidKitCreateRequestDTO;
 import dto.JwtRequest;
 import dto.JwtResponse;
 import dto.Medicament;
+import dto.ScheduleCreateRequestDTO;
+import dto.ScheduleCreateResponseDTO;
 import dto.UserDTO;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,6 +52,28 @@ public class MedicineOrganizerServerService {
                 .addMedicamentIntoFirstAndKitByBarcode(id, name)
                 .enqueue(callback);
     }
+
+    public static void createSchedule(ScheduleCreateRequestDTO scheduleCreateRequestDTO, Callback<Collection<ScheduleCreateResponseDTO>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .createScheduleForUser(scheduleCreateRequestDTO)
+                .enqueue(callback);
+    }
+
+    public static void getSchedule(String username, Callback<Collection<ScheduleCreateResponseDTO>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .getSchedulesForUser(username)
+                .enqueue(callback);
+    }
+
+    public static void deleteSchedule(Long id, Callback<Collection<ScheduleCreateResponseDTO>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .deleteSchedulesForUser(id)
+                .enqueue(callback);
+    }
+
 
 
     public static void createFirstAndKitForUser(String username, String name, String description, Callback<Collection<FirstAidKit>> callback) {

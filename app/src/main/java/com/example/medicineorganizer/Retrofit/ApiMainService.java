@@ -7,6 +7,8 @@ import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
 import dto.Medicament;
+import dto.ScheduleCreateRequestDTO;
+import dto.ScheduleCreateResponseDTO;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -27,4 +29,14 @@ public interface ApiMainService {
 
     @DELETE("/hardDeleteMedicamentForUser")
     Call<Collection<Medicament>> addMedicamentIntoFirstAndKitByBarcode(@Query("id") Long id, @Query("medicament_name") String medicament_name);
+
+    @POST("/createSchedule")
+    Call<Collection<ScheduleCreateResponseDTO>> createScheduleForUser(@Body ScheduleCreateRequestDTO scheduleDTO);
+
+    @GET("/getSchedulesForUser")
+    Call<Collection<ScheduleCreateResponseDTO>> getSchedulesForUser(@Query("username") String username);
+
+    @DELETE("/deleteSchedule")
+    Call<Collection<ScheduleCreateResponseDTO>> deleteSchedulesForUser(@Query("id") Long id);
+
 }

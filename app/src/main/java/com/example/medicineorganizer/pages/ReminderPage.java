@@ -1,16 +1,14 @@
 package com.example.medicineorganizer.pages;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,22 +20,44 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.medicineorganizer.R;
-import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.medicineorganizer.R;
+import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
+import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
+import com.example.medicineorganizer.data.SchedulesDataHolder;
+import com.example.medicineorganizer.recyclerVies.SchedulesRecyclerViewAdapter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import dto.ScheduleDto;
+import dto.AppError;
+import dto.ScheduleCreateRequestDTO;
+import dto.ScheduleCreateResponseDTO;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class ReminderPage extends AppCompatActivity {
+public class ReminderPage extends AppCompatActivity implements SchedulesRecyclerViewAdapter.ItemClickListener{
 
     DrawerLayout drawerLayout;
     ImageView menu;
@@ -45,20 +65,76 @@ public class ReminderPage extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     ImageButton reminderPageImageViewAdd;
     Dialog dialogCreateSchedule;
+    Dialog dialogViewSchedule;
+    Dialog progressDialog;
     Map<Integer, String> timePickerValues;
+    // Хранилище данных
+    SharedPreferences sharedPreferences;
+    RecyclerView recyclerView;
+    TextView noDataTextView;
+    SchedulesRecyclerViewAdapter schedulesAdapter;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("medicine_organizer_client_user_storage", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminder_page);
 
         this.setMenuClickListeners();
         reminderPageImageViewAdd = (ImageButton) findViewById(R.id.reminderPageImageViewAdd);
         dialogCreateSchedule = new Dialog(ReminderPage.this);
+        dialogViewSchedule = new Dialog(ReminderPage.this);
 
         reminderPageImageViewAdd.setOnClickListener(v -> {
             addSchedule();
         });
+
+        noDataTextView = (TextView) findViewById(R.id.reminderPageNoSchedulesView);
+        recyclerView = (RecyclerView) findViewById(R.id.reminderPageRecyclerViewSchedules);
+
+        noDataTextView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        schedulesAdapter = new SchedulesRecyclerViewAdapter
+                (this, SchedulesDataHolder.getInstance().getUserSchedules());
+
+        showProgressDialog();
+
+        schedulesAdapter.setClickListener(this);
+        recyclerView.setAdapter(schedulesAdapter);
+
+        fillRecyclerView();
+    }
+
+
+    private void fillRecyclerView() {
+        MedicineOrganizerServerService.getSchedule(sharedPreferences.getString("username", "empty_username")
+                , new Callback<Collection<ScheduleCreateResponseDTO>>() {
+            @Override
+            public void onResponse(Call<Collection<ScheduleCreateResponseDTO>> call, Response<Collection<ScheduleCreateResponseDTO>> response) {
+                if (response.isSuccessful()) {
+                    SchedulesDataHolder.getInstance().setUserSchedules((List<ScheduleCreateResponseDTO>) response.body());
+                    noDataTextView.setVisibility(View.GONE);
+                    schedulesAdapter.setStorage(response.body());
+                    schedulesAdapter.notifyDataSetChanged();
+                    recyclerView.setVisibility(View.VISIBLE);
+                    hideProgressDialog();
+                } else {
+                    hideProgressDialog();
+                    Log.e("schedule", response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Collection<ScheduleCreateResponseDTO>> call, Throwable t) {
+                hideProgressDialog();
+                t.printStackTrace();
+            }
+        });
+
     }
 
     private void addSchedule() {
@@ -178,18 +254,13 @@ public class ReminderPage extends AppCompatActivity {
         LinearLayout timeInputContainer = dialogCreateSchedule.findViewById(R.id.addScheduleTimeContainer);
         Button addTimeFieldButton = dialogCreateSchedule.findViewById(R.id.addScheduleAddTimeButton);
 
-        addTimeFieldButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addTimeField(timeInputContainer);
-            }
-        });
+        addTimeFieldButton.setOnClickListener(v -> addTimeField(timeInputContainer));
         addTimeField(timeInputContainer);
 
         EditText commentEditText = (EditText) dialogCreateSchedule.findViewById(R.id.addScheduleComment);
         Button addScheduleCreateButton = (Button) dialogCreateSchedule.findViewById(R.id.addScheduleCreateButton);
         addScheduleCreateButton.setOnClickListener(v -> {
-            ScheduleDto scheduleDto = new ScheduleDto();
+            ScheduleCreateRequestDTO scheduleDto = new ScheduleCreateRequestDTO();
             if (medicamentNameTextView.getText().length() < 1) {
                 Toast.makeText(this, "Введите название препарата", Toast.LENGTH_SHORT).show();
                 return;
@@ -201,20 +272,20 @@ public class ReminderPage extends AppCompatActivity {
                 comment = String.valueOf(commentEditText.getText());
                 scheduleDto.setComment(comment);
             }
-            Object amount;
+            String amount;
             if (integerAmount.getVisibility() == View.VISIBLE) {
                 if (integerAmount.getText().length() < 1 || Integer.parseInt(String.valueOf(integerAmount.getText())) == 0) {
                     Toast.makeText(this, "Укажите дозировку", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
-                    amount = Integer.parseInt(String.valueOf(integerAmount.getText()));
+                    amount = String.valueOf(Integer.parseInt(String.valueOf(integerAmount.getText())));
                 }
             } else {
                 if (stringAmount.getText().length() < 1) {
                     Toast.makeText(this, "Укажите дозировку", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                else amount = stringAmount.getText();
+                else amount = String.valueOf(stringAmount.getText());
             }
             scheduleDto.setAmount(amount);
             List<String> daysOfWeeks = new ArrayList<>();
@@ -269,14 +340,62 @@ public class ReminderPage extends AppCompatActivity {
                 times.add(time);
             }
             scheduleDto.setTimes(times);
+            scheduleDto.setUsername(sharedPreferences.getString("username", "empty_username"));
 
-            //todo послать на сервер
+            showProgressDialog();
+            MedicineOrganizerServerService.createSchedule(scheduleDto, new Callback<Collection<ScheduleCreateResponseDTO>>() {
+                @Override
+                public void onResponse(Call<Collection<ScheduleCreateResponseDTO>> call, Response<Collection<ScheduleCreateResponseDTO>> response) {
+                    hideProgressDialog();
+                    if (response.isSuccessful()) {
+                        SchedulesDataHolder.getInstance().setUserSchedules((List<ScheduleCreateResponseDTO>) response.body());
+                        noDataTextView.setVisibility(View.GONE);
+                        schedulesAdapter.setStorage(response.body());
+                        schedulesAdapter.notifyDataSetChanged();
+                        recyclerView.setVisibility(View.VISIBLE);
+                    } else {
+                        if (response.errorBody() != null) {
+                            try {
+                                Gson gson = new Gson();
+                                AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                                Toast.makeText(getApplicationContext(), appError.getMessage(), Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Collection<ScheduleCreateResponseDTO>> call, Throwable t) {
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                    Log.e("schedules", t.getMessage());
+                }
+            });
+
             dialogCreateSchedule.cancel();
         });
 
 
         dialogCreateSchedule.show();
     }
+
+    private void showProgressDialog() {
+        progressDialog = new Dialog(this);
+        progressDialog.setContentView(R.layout.progress_dialog_layout);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
     private void addTimeField(LinearLayout timeInputContainer) {
         TimePicker timePicker = new TimePicker(new ContextThemeWrapper(this, android.R.style.Widget_Material_TimePicker));
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -349,5 +468,83 @@ public class ReminderPage extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        dialogViewSchedule.setContentView(R.layout.check_schedule);
+        dialogViewSchedule.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogViewSchedule.setCancelable(true);
+
+        ImageButton viewScheduleCloseButton = (ImageButton) dialogViewSchedule.findViewById(R.id.viewScheduleCloseButton);
+        viewScheduleCloseButton.setOnClickListener(v -> dialogViewSchedule.cancel());
+
+        TextView nameOfTheSchedule = (TextView) dialogViewSchedule.findViewById(R.id.viewPageScheduleNameValue);
+        nameOfTheSchedule.setText(schedulesAdapter.getStorage().get(position).getName());
+        TextView scheduleDuration = (TextView) dialogViewSchedule.findViewById(R.id.viewPageScheduleDurationValue);
+        scheduleDuration.setText(String.valueOf(schedulesAdapter.getStorage().get(position).getDuration()));
+
+        List<String> daysList = schedulesAdapter.getStorage().get(position).getDaysOfWeeks().stream()
+                .map(x -> x.replace("monday", "Пн"))
+                .map(x -> x.replace("tuesday", "Вт"))
+                .map(x -> x.replace("wednesday", "Ср"))
+                .map(x -> x.replace("thursday", "Чт"))
+                .map(x -> x.replace("friday", "Пт"))
+                .map(x -> x.replace("saturday", "Сб"))
+                .map(x -> x.replace("sunday", "Вс"))
+                .collect(Collectors.toList());
+
+        String days = String.join(", ", daysList);
+        TextView daysOfWeeks = (TextView) dialogViewSchedule.findViewById(R.id.daysOfWeeksValue);
+        daysOfWeeks.setText(days);
+
+        TextView timesSchedule = (TextView) dialogViewSchedule.findViewById(R.id.timesScheduleValue);
+        timesSchedule.setText(String.join(", ", schedulesAdapter.getStorage().get(position).getTimes()));
+
+        if (schedulesAdapter.getStorage().get(position).getComment() != null && !schedulesAdapter.getStorage().get(position).getComment().isEmpty()) {
+            ConstraintLayout scheduleCommentLayout = (ConstraintLayout) dialogViewSchedule.findViewById(R.id.scheduleCommentLayout);
+            scheduleCommentLayout.setVisibility(View.VISIBLE);
+            TextView scheduleComment = (TextView) dialogViewSchedule.findViewById(R.id.scheduleCommentValue);
+            scheduleComment.setText(schedulesAdapter.getStorage().get(position).getComment());
+        }
+
+        Button viewPageDeleteScheduleButton = (Button) dialogViewSchedule.findViewById(R.id.viewPageDeleteScheduleButton);
+        viewPageDeleteScheduleButton.setOnClickListener(v-> {
+            showProgressDialog();
+            MedicineOrganizerServerService.deleteSchedule(schedulesAdapter.getStorage().get(position).getIdOfSchedule(), new Callback<Collection<ScheduleCreateResponseDTO>>() {
+                @Override
+                public void onResponse(Call<Collection<ScheduleCreateResponseDTO>> call, Response<Collection<ScheduleCreateResponseDTO>> response) {
+                    hideProgressDialog();
+                    if (response.isSuccessful()) {
+                        SchedulesDataHolder.getInstance().setUserSchedules((List<ScheduleCreateResponseDTO>) response.body());
+                        schedulesAdapter.setStorage(response.body());
+                        schedulesAdapter.notifyDataSetChanged();
+                        dialogViewSchedule.cancel();
+                    } else {
+                        if (response.errorBody() != null) {
+                            try {
+                                Gson gson = new Gson();
+                                AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                                Toast.makeText(getApplicationContext(), appError.getMessage(), Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Collection<ScheduleCreateResponseDTO>> call, Throwable t) {
+                    hideProgressDialog();
+                    t.printStackTrace();
+                }
+            });
+        });
+
+
+        dialogViewSchedule.show();
+
     }
 }
