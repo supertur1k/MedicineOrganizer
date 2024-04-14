@@ -105,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
         mainPage.setOnClickListener(v -> recreate());
         notifications.setOnClickListener(v -> redirectActivity(MainActivity.this, NotificationsPage.class));
         reminder.setOnClickListener(v -> redirectActivity(MainActivity.this, ReminderPage.class));
+        logout.setOnClickListener(v -> redirectActivity(MainActivity.this, LoginPageActivity.class));
+
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);

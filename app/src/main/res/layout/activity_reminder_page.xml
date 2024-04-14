@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drawerLayout"
+    android:background="@color/white"
     tools:context=".pages.ReminderPage">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:textStyle="bold"
-                android:text="Добавить график приема с систему:"
+                android:textColor="@color/greyColor"
+                android:text="Добавить график приема в систему:"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/reminderPageImageViewAdd"
@@ -90,6 +92,7 @@
                 android:gravity="center"
                 android:text="Пока что у вас нет добавленных графиков приема лекарств."
                 android:textSize="18sp"
+                android:textColor="@color/greyColor"
                 android:textStyle="italic"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"

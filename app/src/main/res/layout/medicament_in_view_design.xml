@@ -11,6 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:orientation="horizontal">
 
         <ImageView
@@ -39,6 +40,7 @@
             <TextView
                 android:id="@+id/viewPageMedicamentName"
                 android:layout_width="wrap_content"
+                android:textColor="@color/greyColor"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:paddingStart="8dp"

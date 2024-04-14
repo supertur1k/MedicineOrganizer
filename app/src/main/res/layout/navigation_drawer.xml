@@ -42,7 +42,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/saladGreen"
+            android:textColor="@color/greyColor"
             android:text="Уведомления"
             android:textSize="20sp"
             android:drawableLeft="@drawable/ic_notifications"
@@ -60,7 +60,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/saladGreen"
+            android:textColor="@color/greyColor"
             android:text="Мои аптечки"
             android:textSize="20sp"
             android:drawableLeft="@drawable/ic_home_fak"
@@ -78,7 +78,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/saladGreen"
+            android:textColor="@color/greyColor"
             android:text="Прием лекарств"
             android:textSize="20sp"
             android:drawableLeft="@drawable/ic_medications_reminder"
@@ -102,7 +102,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/saladGreen"
+            android:textColor="@color/redButton"
             android:text="Выйти"
             android:textSize="20sp"
             android:drawableLeft="@drawable/ic_exit"

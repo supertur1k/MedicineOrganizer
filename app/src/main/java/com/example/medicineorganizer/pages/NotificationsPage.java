@@ -145,6 +145,7 @@ public class NotificationsPage extends AppCompatActivity implements Notification
         notifications.setOnClickListener(v -> recreate());
         mainPage.setOnClickListener(v -> redirectActivity(NotificationsPage.this, MainActivity.class));
         reminder.setOnClickListener(v -> redirectActivity(NotificationsPage.this, ReminderPage.class));
+        logout.setOnClickListener(v -> redirectActivity(NotificationsPage.this, LoginPageActivity.class));
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);

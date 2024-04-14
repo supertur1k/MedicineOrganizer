@@ -428,6 +428,8 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
         reminder.setOnClickListener(v -> recreate());
         notifications.setOnClickListener(v -> redirectActivity(ReminderPage.this, NotificationsPage.class));
         mainPage.setOnClickListener(v -> redirectActivity(ReminderPage.this, MainActivity.class));
+        logout.setOnClickListener(v -> redirectActivity(ReminderPage.this, LoginPageActivity.class));
+
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);

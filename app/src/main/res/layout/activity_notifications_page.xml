@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:id="@+id/drawerLayout"
     tools:context=".pages.NotificationsPage">
 
@@ -22,6 +23,7 @@
             android:id="@+id/notificationPageHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/greyColor"
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="Уведомления"
@@ -71,6 +73,7 @@
                 android:text="У вас пока что нет уведомлений."
                 android:textSize="20sp"
                 android:visibility="visible"
+                android:textColor="@color/greyColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

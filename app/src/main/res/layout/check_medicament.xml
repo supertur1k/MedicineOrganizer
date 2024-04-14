@@ -297,7 +297,7 @@
                     android:maxLines="1"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
-                    android:text="Показания к применению:"
+                    android:text="Противопоказания к применению:"
                     android:textColor="@color/redButton"
                     android:textSize="15sp"
                     android:textStyle="italic"

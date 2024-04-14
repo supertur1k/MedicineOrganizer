@@ -333,6 +333,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
         notifications.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, NotificationsPage.class));
         mainPage.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, MainActivity.class));
         reminder.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, ReminderPage.class));
+        logout.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, LoginPageActivity.class));
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);
