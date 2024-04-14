@@ -7,6 +7,7 @@ import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
 import dto.Medicament;
+import dto.NotificationDto;
 import dto.ScheduleCreateRequestDTO;
 import dto.ScheduleCreateResponseDTO;
 import retrofit2.Call;
@@ -38,5 +39,9 @@ public interface ApiMainService {
 
     @DELETE("/deleteSchedule")
     Call<Collection<ScheduleCreateResponseDTO>> deleteSchedulesForUser(@Query("id") Long id);
+
+    @GET("/getNotifications")
+    Call<Collection<NotificationDto>> getNotifications(@Query("username") String username);
+
 
 }

@@ -16,6 +16,7 @@ import dto.FirstAidKitCreateRequestDTO;
 import dto.JwtRequest;
 import dto.JwtResponse;
 import dto.Medicament;
+import dto.NotificationDto;
 import dto.ScheduleCreateRequestDTO;
 import dto.ScheduleCreateResponseDTO;
 import dto.UserDTO;
@@ -71,6 +72,14 @@ public class MedicineOrganizerServerService {
         RetrofitMedicineOrganizerServerService.getInstance()
                 .getApiMainService()
                 .deleteSchedulesForUser(id)
+                .enqueue(callback);
+    }
+
+
+    public static void getNotifications(String username, Callback<Collection<NotificationDto>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .getNotifications(username)
                 .enqueue(callback);
     }
 

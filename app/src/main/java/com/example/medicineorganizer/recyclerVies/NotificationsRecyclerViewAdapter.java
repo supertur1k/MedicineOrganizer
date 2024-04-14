@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,27 +14,27 @@ import com.example.medicineorganizer.R;
 import java.util.Collection;
 import java.util.List;
 
-import dto.Medicament;
+import dto.NotificationDto;
 
-public class MedicinesRecyclerViewAdapter extends RecyclerView.Adapter<MedicinesRecyclerViewAdapter.ViewHolder> {
+public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<NotificationsRecyclerViewAdapter.ViewHolder> {
 
-    public List<Medicament> getStorage() {
+    public List<NotificationDto> getStorage() {
         return storage;
     }
 
-    public void setStorage(List<Medicament> storage) {
+    public void setStorage(List<NotificationDto> storage) {
         this.storage = storage;
     }
 
-    public void setStorage(Collection<Medicament> storage) {
-        this.storage = (List<Medicament>) storage;
+    public void setStorage(Collection<NotificationDto> storage) {
+        this.storage = (List<NotificationDto>) storage;
     }
 
-    private List<Medicament> storage;
+    private List<NotificationDto> storage;
     private LayoutInflater layoutInflater;
     private ItemClickListener itemClickListener;
 
-    public MedicinesRecyclerViewAdapter(Context context, List<Medicament> data) {
+    public NotificationsRecyclerViewAdapter(Context context, List<NotificationDto> data) {
         this.layoutInflater = LayoutInflater.from(context);
         this.storage = data;
     }
@@ -43,16 +42,14 @@ public class MedicinesRecyclerViewAdapter extends RecyclerView.Adapter<Medicines
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.medicament_in_view_design, parent, false);
+        View view = layoutInflater.inflate(R.layout.notification_in_view_design, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Medicament medicament = storage.get(position);
-        holder.medicamentName.setText(medicament.getName());
-        //holder.firstAidKitImage.setImageResource(R.drawable.first_aid_kit_image);
-
+        NotificationDto notificationDto = storage.get(position);
+        holder.notificationName.setText(notificationDto.getName());
     }
 
     @Override
@@ -62,12 +59,10 @@ public class MedicinesRecyclerViewAdapter extends RecyclerView.Adapter<Medicines
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView medicamentName;
-        ImageView medicamentImage;
-
+        TextView notificationName;
         ViewHolder(View itemView) {
             super(itemView);
-            medicamentName = itemView.findViewById(R.id.viewPageMedicamentName);
+            notificationName = itemView.findViewById(R.id.viewPageNotificationName);
             itemView.setOnClickListener(this);
         }
 
@@ -77,7 +72,7 @@ public class MedicinesRecyclerViewAdapter extends RecyclerView.Adapter<Medicines
         }
     }
 
-    Medicament getItem(int id) {
+    NotificationDto getItem(int id) {
         return storage.get(id);
     }
 

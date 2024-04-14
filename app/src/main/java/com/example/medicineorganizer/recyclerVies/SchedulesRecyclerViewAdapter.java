@@ -37,13 +37,11 @@ public class SchedulesRecyclerViewAdapter extends RecyclerView.Adapter<Schedules
     private LayoutInflater layoutInflater;
     private ItemClickListener itemClickListener;
 
-    // data is passed into the constructor
     public SchedulesRecyclerViewAdapter(Context context, List<ScheduleCreateResponseDTO> data) {
         this.layoutInflater = LayoutInflater.from(context);
         this.storage = data;
     }
 
-    // inflates the row layout from xml when needed
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -51,21 +49,18 @@ public class SchedulesRecyclerViewAdapter extends RecyclerView.Adapter<Schedules
         return new ViewHolder(view);
     }
 
-    // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ScheduleCreateResponseDTO schedule = storage.get(position);
         holder.scheduleName.setText(schedule.getName());
     }
 
-    // total number of rows
     @Override
     public int getItemCount() {
         return storage.size();
     }
 
 
-    // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView scheduleName;
         ImageView scheduleImage;
@@ -82,17 +77,14 @@ public class SchedulesRecyclerViewAdapter extends RecyclerView.Adapter<Schedules
         }
     }
 
-    // convenience method for getting data at click position
     ScheduleCreateResponseDTO getItem(int id) {
         return storage.get(id);
     }
 
-    // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
-    // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }

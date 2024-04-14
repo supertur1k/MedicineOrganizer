@@ -4,32 +4,132 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.medicineorganizer.R;
+import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
+import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
+import com.example.medicineorganizer.recyclerVies.MedicinesRecyclerViewAdapter;
+import com.example.medicineorganizer.recyclerVies.NotificationsRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
-public class NotificationsPage extends AppCompatActivity {
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import dto.AppError;
+import dto.NotificationDto;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class NotificationsPage extends AppCompatActivity implements NotificationsRecyclerViewAdapter.ItemClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     LinearLayout mainPage, notifications, reminder, logout;
     BottomNavigationView bottomNavigationView;
+    RecyclerView recyclerViewNotifications;
+    TextView notificationsNoData;
+    NotificationsRecyclerViewAdapter adapter;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
+    Dialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("medicine_organizer_client_user_storage", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications_page);
-
         this.setMenuClickListeners();
+
+        notificationsNoData = (TextView) findViewById(R.id.notificationPageNoDataMessage);
+        recyclerViewNotifications = (RecyclerView) findViewById(R.id.notificationPageRecView);
+        recyclerViewNotifications.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new NotificationsRecyclerViewAdapter(this, new ArrayList<>());
+        adapter.setClickListener(this);
+        recyclerViewNotifications.setAdapter(adapter);
+
+        fillStorageOfNotifications();
     }
 
+    private void fillStorageOfNotifications() {
+        showProgressDialog();
+        MedicineOrganizerServerService.getNotifications(sharedPreferences.getString("username", "empty_username"), new Callback<Collection<NotificationDto>>() {
+            @Override
+            public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
+                hideProgressDialog();
+                if (response.isSuccessful()) {
+                    if (response.body().size() > 0) {
+                        notificationsNoData.setVisibility(View.GONE);
+                        recyclerViewNotifications.setVisibility(View.VISIBLE);
+                    }
+                    adapter.setStorage(response.body());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            Gson gson = new Gson();
+                            AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                            Toast.makeText(getApplicationContext(), appError.getMessage(), Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Collection<NotificationDto>> call, Throwable t) {
+                t.printStackTrace();
+                hideProgressDialog();
+            }
+        });
+    }
+
+    private void showProgressDialog() {
+        progressDialog = new Dialog(this);
+        progressDialog.setContentView(R.layout.progress_dialog_layout);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Toast.makeText(this, adapter.getStorage().get(position).getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
     private void setMenuClickListeners() {
         drawerLayout = findViewById(R.id.drawerLayout);
         menu = findViewById(R.id.menu);
