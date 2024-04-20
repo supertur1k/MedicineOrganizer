@@ -1,6 +1,7 @@
 package dto;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class FirstAidKit {
 
@@ -37,6 +38,10 @@ public class FirstAidKit {
 
     public Collection<Medicament> getMedicaments() {
         return medicaments;
+    }
+
+    public Collection<Medicament> getMedicamentsFiltered(String name) {
+        return medicaments.stream().filter(x->x.getName().toLowerCase().startsWith(name.toLowerCase())).collect(Collectors.toList());
     }
 
     public void setMedicaments(Collection<Medicament> medicaments) {

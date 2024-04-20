@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
+import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.example.medicineorganizer.recyclerVies.MedicinesRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -59,16 +62,21 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     Dialog progressDialog;
     FirstAidKit firstAitKitFromStorage;
 
+    ConstraintLayout fakPageFakFilter;
+    EditText fakPageFilterName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_ait_kit_page);
         this.setMenuClickListeners();
 
+        fakPageFakFilter = findViewById(R.id.fakPageFakFilter);
         nameOfFak = findViewById(R.id.fakPageNameTextView);
         descOfFak = findViewById(R.id.fakPageDescTextView);
         this.setFakData();
 
+        fakPageFilterName = findViewById(R.id.fakPageFilterName);
         addMedicine = findViewById(R.id.fakPageAddMedicine);
         dialog = new Dialog(FirstAitKitPage.this);
         dialogMedicament = new Dialog(FirstAitKitPage.this);
@@ -88,6 +96,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
     private void setVisibilityIfMedicamentDataSetIsNotEmpty() {
         if (ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicaments().size() > 0) {
+            fakPageFakFilter.setVisibility(View.VISIBLE);
             mainPageNoMedicinesData.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
@@ -158,6 +167,10 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
                         adapter.setStorage(responseBody);
                         adapter.notifyDataSetChanged();
                         ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().setMedicaments(responseBody);
+                        if (responseBody == null || responseBody.size() < 1) {
+                            fakPageFakFilter.setVisibility(View.GONE);
+                            mainPageNoMedicinesData.setVisibility(View.VISIBLE);
+                        }
                         dialogMedicament.cancel();
                     } else {
                         Log.e("not successful deleting", response.message());
@@ -182,6 +195,26 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
                     showCreateFAKDialogWindow();
                 }
         );
+        fakPageFilterName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable == null || editable.toString().isEmpty() || editable.toString().length() < 1) {
+                    adapter.setStorage(ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicaments());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.setStorage(ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicamentsFiltered(editable.toString()));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     private void showCreateFAKDialogWindow() {

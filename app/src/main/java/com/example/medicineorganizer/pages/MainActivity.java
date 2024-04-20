@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -153,6 +155,28 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
                     showCreateFAKDialogWindow();
                 }
         );
+
+        fakSearchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable == null || editable.toString().isEmpty() || editable.toString().length() < 1) {
+                    adapter.setStorage(FirstAidKitsDataHolder.getInstance().getFirstAidKits());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.setStorage(FirstAidKitsDataHolder.getInstance().getFirstAidKitsFiltered(editable.toString()));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+
     }
 
     private void showCreateFAKDialogWindow() {

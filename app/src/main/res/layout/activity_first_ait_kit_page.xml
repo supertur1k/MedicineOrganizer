@@ -70,6 +70,38 @@
             app:layout_constraintTop_toBottomOf="@+id/mainPageDecorativeLine" />
 
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/fakPageFakFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/background_with_border"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fakPageAddMedicine">
+
+
+            <EditText
+                android:id="@+id/fakPageFilterName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:hint="Название препарата"
+                android:maxLines="1"
+                android:textColor="@color/greyColor"
+                android:textColorHint="@color/greyColor"
+                android:textSize="15dp"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fakPageRecyclerViewContainer"
@@ -79,7 +111,7 @@
             app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fakPageAddMedicine">
+            app:layout_constraintTop_toBottomOf="@+id/fakPageFakFilter">
 
             <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
