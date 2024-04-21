@@ -49,7 +49,8 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         NotificationDto notificationDto = storage.get(position);
-        holder.notificationName.setText(notificationDto.getName());
+        holder.notificationName.setText(notificationDto.getName() + "\nПринять в количестве: " + notificationDto.getAmount()
+                + "\nВремя: " + notificationDto.getTime());
     }
 
     @Override

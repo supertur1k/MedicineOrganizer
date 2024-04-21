@@ -18,11 +18,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +68,8 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     ConstraintLayout fakPageFakFilter;
     EditText fakPageFilterName;
 
+    Spinner spinner;
+    String[] formsArray;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +97,35 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
         firstAitKitFromStorage = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
         addListenerOnButton();
+
+        spinner = findViewById(R.id.fakPageFilterForm);
+        formsArray = new String[]{"Все", "Таблетки", "Капсулы", "Сиропы", "Мази", "Кремы", "Растворы"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, formsArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        addSpinnerListener();
+    }
+
+    private void addSpinnerListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedItem = formsArray[position];
+                if (selectedItem.equals("Все")) {
+                    adapter.setStorage(ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicaments());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.setStorage(ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicamentsFilteredByReleaseForm(selectedItem));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
+
     }
 
     private void setVisibilityIfMedicamentDataSetIsNotEmpty() {

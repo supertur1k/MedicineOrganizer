@@ -44,6 +44,10 @@ public class FirstAidKit {
         return medicaments.stream().filter(x->x.getName().toLowerCase().startsWith(name.toLowerCase())).collect(Collectors.toList());
     }
 
+    public Collection<Medicament> getMedicamentsFilteredByReleaseForm(String releaseForm) {
+        return medicaments.stream().filter(x->x.getReleaseForm().toLowerCase().contains(releaseForm.toLowerCase())).collect(Collectors.toList());
+    }
+
     public void setMedicaments(Collection<Medicament> medicaments) {
         this.medicaments = medicaments;
     }

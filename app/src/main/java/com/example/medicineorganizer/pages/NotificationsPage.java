@@ -124,7 +124,9 @@ public class NotificationsPage extends AppCompatActivity implements Notification
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(this, adapter.getStorage().get(position).getName(), Toast.LENGTH_SHORT).show();
+        String alert = adapter.getStorage().get(position).getName() + "\nПринять в количестве: " + adapter.getStorage().get(position).getAmount()
+                + "\nВремя: " + adapter.getStorage().get(position).getTime();
+        Toast.makeText(this, alert, Toast.LENGTH_LONG).show();
     }
 
     public interface ItemClickListener {
