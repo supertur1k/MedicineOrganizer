@@ -14,6 +14,7 @@ import dto.AddMedIntoFirstAidKitDTO;
 import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
+import dto.FirstAidKitIdUsernameDTO;
 import dto.JwtRequest;
 import dto.JwtResponse;
 import dto.Medicament;
@@ -91,6 +92,12 @@ public class MedicineOrganizerServerService {
                 .enqueue(callback);
     }
 
+    public static void removeFirstAndFromForUser(String username, Long id, Callback<Collection<FirstAidKit>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .removeFirstAndFromForUser(new FirstAidKitIdUsernameDTO(username, id))
+                .enqueue(callback);
+    }
 
 
     public static void createFirstAndKitForUser(String username, String name, String description, Callback<Collection<FirstAidKit>> callback) {

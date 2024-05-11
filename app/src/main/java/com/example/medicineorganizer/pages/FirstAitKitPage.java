@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.medicineorganizer.R;
+import com.example.medicineorganizer.Retrofit.RetrofitMedicineOrganizerServerService;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
 import com.example.medicineorganizer.recyclerVies.MedicinesRecyclerViewAdapter;
@@ -42,6 +45,7 @@ import java.util.Collection;
 import java.util.List;
 
 import dto.FirstAidKit;
+import dto.FirstAidKitIdUsernameDTO;
 import dto.Medicament;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,10 +61,13 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     TextView mainPageNoMedicinesData;
     DrawerLayout drawerLayout;
     ImageView menu;
+    ImageButton settingsButton;
     LinearLayout mainPage, notifications, reminder, logout;
     BottomNavigationView bottomNavigationView;
     Dialog dialog;
     Dialog dialogMedicament;
+
+    Dialog settingsDialog;
 
     Dialog progressDialog;
     FirstAidKit firstAitKitFromStorage;
@@ -70,9 +77,12 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
     Spinner spinner;
     String[] formsArray;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("medicine_organizer_client_user_storage", Context.MODE_PRIVATE);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_ait_kit_page);
         this.setMenuClickListeners();
@@ -82,9 +92,11 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
         descOfFak = findViewById(R.id.fakPageDescTextView);
         this.setFakData();
 
+        settingsButton = (ImageButton) findViewById(R.id.fakPageSettingsButton);
         fakPageFilterName = findViewById(R.id.fakPageFilterName);
         addMedicine = findViewById(R.id.fakPageAddMedicine);
         dialog = new Dialog(FirstAitKitPage.this);
+        settingsDialog = new Dialog(FirstAitKitPage.this);
         dialogMedicament = new Dialog(FirstAitKitPage.this);
 
         mainPageNoMedicinesData = findViewById(R.id.fakPageNoMedicinesData);
@@ -98,6 +110,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
         firstAitKitFromStorage = ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit();
         addListenerOnButton();
+        addSettingsButtonListener();
 
         spinner = findViewById(R.id.fakPageFilterForm);
         formsArray = new String[]{"Все", "Таблетки", "Капсулы", "Сиропы", "Мази", "Кремы", "Растворы"};
@@ -108,6 +121,55 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
         addSpinnerListener();
     }
 
+
+    private void addSettingsButtonListener() {
+        settingsButton.setOnClickListener(v -> {
+            showSettingsDialog();
+        });
+    }
+
+    private void showSettingsDialog() {
+        settingsDialog.setContentView(R.layout.settings_dialog);
+        settingsDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        settingsDialog.setCancelable(true);
+
+        TextView header = settingsDialog.findViewById(R.id.viewPageSettingsHeader);
+        String newHeaderValue = header.getText() + ": " + ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getName_of_the_first_aid_kit();
+        header.setText(newHeaderValue);
+        String amount = String.valueOf(ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getMedicaments().size());
+        ImageButton close = settingsDialog.findViewById(R.id.settingsCloseButton);
+        close.setOnClickListener(v -> {settingsDialog.cancel();});
+
+        TextView viewPageSettingsAmountValue = settingsDialog.findViewById(R.id.viewPageSettingsAmountValue);
+        viewPageSettingsAmountValue.setText(amount);
+        if (ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getDescription() != null &&
+                !ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getDescription().isEmpty()) {
+            ConstraintLayout settingsDescription = settingsDialog.findViewById(R.id.viewPageSettingsCLayout);
+            settingsDescription.setVisibility(View.VISIBLE);
+            TextView settingPageDescValue = settingsDialog.findViewById(R.id.settingPageDescValue);
+            settingPageDescValue.setText(ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getDescription());
+        }
+        Button deleteFAKButton = settingsDialog.findViewById(R.id.deleteFAKButton);
+        deleteFAKButton.setOnClickListener(v -> {
+            MedicineOrganizerServerService.removeFirstAndFromForUser(
+                    sharedPreferences.getString("username", null), ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getId(),
+                    new Callback<Collection<FirstAidKit>>() {
+                        @Override
+                        public void onResponse(Call<Collection<FirstAidKit>> call, Response<Collection<FirstAidKit>> response) {
+                            settingsDialog.cancel();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Collection<FirstAidKit>> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
+
+        settingsDialog.show();
+    }
     private void addSpinnerListener() {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

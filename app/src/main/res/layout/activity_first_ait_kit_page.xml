@@ -8,8 +8,8 @@
     tools:context=".pages.FirstAitKitPage">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:orientation="vertical">
         <include
             android:id="@+id/toolbar_included"
@@ -18,43 +18,67 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/fakPageNameTextView"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerConstraintLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:textColor="@color/greyColor"
-            android:text="Аптечка"
-            android:textSize="26dp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar_included" />
-
-        <TextView
-            android:id="@+id/fakPageDescTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="24dp"
-            android:gravity="center"
-            android:text=""
-            android:visibility="gone"
-            android:textSize="19dp"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_included"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fakPageNameTextView" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+            <ImageButton
+                android:id="@+id/fakPageSettingsButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/settings"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/fakPageNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Аптечка"
+                android:textColor="@color/greyColor"
+                android:textSize="26dp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/fakPageDescTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:gravity="center"
+                android:text=""
+                android:visibility="gone"
+                android:textSize="19dp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toStartOf="@+id/fakPageSettingsButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fakPageNameTextView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/mainPageDecorativeLine"
-            android:layout_width="0dp"
+            android:layout_width="1000dp"
             android:layout_height="2dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="301dp"
             android:background="@color/saladGreen"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fakPageDescTextView" />
+            app:layout_constraintTop_toBottomOf="@id/headerConstraintLayout" />
 
 
         <Button
@@ -67,7 +91,7 @@
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mainPageDecorativeLine" />
+            app:layout_constraintTop_toBottomOf="@+id/headerConstraintLayout" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout

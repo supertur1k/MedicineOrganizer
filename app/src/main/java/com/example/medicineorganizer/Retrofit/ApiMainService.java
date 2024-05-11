@@ -7,6 +7,7 @@ import dto.AddMedIntoFirstAidKitDTO;
 import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
+import dto.FirstAidKitIdUsernameDTO;
 import dto.Medicament;
 import dto.NotificationDto;
 import dto.ScheduleCreateRequestDTO;
@@ -15,6 +16,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -46,6 +48,9 @@ public interface ApiMainService {
 
     @GET("/getNotifications")
     Call<Collection<NotificationDto>> getNotifications(@Query("username") String username);
+
+    @HTTP(method = "DELETE", path = "/removeFirstAndFromForUser", hasBody = true)
+    Call<Collection<FirstAidKit>> removeFirstAndFromForUser(@Body FirstAidKitIdUsernameDTO firstAidKitIdUsernameDTO);
 
 
 }
