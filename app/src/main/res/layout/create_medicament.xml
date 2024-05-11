@@ -40,6 +40,71 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addMedicamentPageName" />
 
+            <TextView
+                android:id="@+id/addMedicineAmountHeader"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="15dp"
+                android:text="Введите количество:"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/addMedicamentPageDescription" />
+
+            <ImageButton
+                android:id="@+id/decreaseAmountButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/ic_remove"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/addMedicineAmountHeader" />
+
+            <EditText
+                android:id="@+id/integerAmountValue"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="0"
+                android:inputType="number"
+                android:visibility="visible"
+                app:layout_constraintStart_toEndOf="@+id/decreaseAmountButton"
+                app:layout_constraintTop_toTopOf="@+id/decreaseAmountButton" />
+
+
+            <ImageButton
+                android:id="@+id/increaseAmountButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add"
+                app:layout_constraintStart_toEndOf="@+id/integerAmountValue"
+                app:layout_constraintTop_toTopOf="@+id/integerAmountValue" />
+
+            <CheckBox
+                android:id="@+id/checkboxSpecifyOtherValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="16dp"
+                android:text="Указать другое значение"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/integerAmountValue" />
+
+            <EditText
+                android:id="@+id/addMedicamentOtherAmountInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="15dp"
+                android:visibility="gone"
+                android:hint="Введите количество:"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/checkboxSpecifyOtherValue" />
+
+
             <Button
                 android:id="@+id/addMedicamentPageCreateButton"
                 android:layout_width="match_parent"
@@ -53,11 +118,10 @@
                 android:text="Добавить препарат"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addMedicamentPageDescription">
+                app:layout_constraintTop_toBottomOf="@+id/addMedicamentOtherAmountInput">
 
             </Button>
 
-            <!-- Добавляем ImageView справа от кнопки "Добавить препарат" -->
             <ImageButton
                 android:id="@+id/addMedicamentPageQrScanner"
                 android:layout_width="55dp"

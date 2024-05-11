@@ -3,6 +3,7 @@ package com.example.medicineorganizer.Retrofit;
 import java.util.Collection;
 import java.util.List;
 
+import dto.AddMedIntoFirstAidKitDTO;
 import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
@@ -24,6 +25,9 @@ public interface ApiMainService {
 
     @POST("/creteFirstAndKitForUser")
     Call<Collection<FirstAidKit>> createFirstAndKitForUser(@Body FirstAidKitCreateRequestDTO firstAidKitCreateRequestDTO);
+
+    @POST("/addMedicamentIntoFirstAndKitById")
+    Call<Collection<Medicament>> addMedicamentIntoFirstAndKit(@Body AddMedIntoFirstAidKitDTO addMedIntoFirstAidKitDTO);
 
     @POST("/addMedicamentIntoFirstAndKitByBarcode")
     Call<Collection<Medicament>> addMedicamentIntoFirstAndKitByBarcode(@Body AddMedicamentIntoFAKBarcodeRequest addMedicamentIntoFAKBarcodeRequest);

@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -162,7 +160,7 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
         ImageButton increaseAmountButton = (ImageButton) dialogCreateSchedule.findViewById(R.id.increaseAmountButton);
         ImageButton decreaseAmountButton = (ImageButton) dialogCreateSchedule.findViewById(R.id.decreaseAmountButton);
         EditText integerAmount = (EditText) dialogCreateSchedule.findViewById(R.id.integerAmountValue);
-        EditText stringAmount = (EditText) dialogCreateSchedule.findViewById(R.id.addScheduleOtherAmountInput);
+        EditText stringAmount = (EditText) dialogCreateSchedule.findViewById(R.id.addMedicamentOtherAmountInput);
 
         increaseAmountButton.setOnClickListener(v -> {
             if (integerAmount.getText().length() > 0) {

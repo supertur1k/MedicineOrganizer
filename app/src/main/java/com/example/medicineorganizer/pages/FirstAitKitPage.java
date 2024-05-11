@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,7 +33,6 @@ import android.widget.Toast;
 import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
-import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.example.medicineorganizer.recyclerVies.MedicinesRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -70,6 +70,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
 
     Spinner spinner;
     String[] formsArray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -258,43 +259,78 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
         EditText name = (EditText) dialog.findViewById(R.id.addMedicamentPageName);
         EditText desc = (EditText) dialog.findViewById(R.id.addMedicamentPageDescription);
         ImageButton qr = dialog.findViewById(R.id.addMedicamentPageQrScanner);
-
+        EditText integerAmountValue = (EditText) dialog.findViewById(R.id.integerAmountValue);
         Button addButton = (Button) dialog.findViewById(R.id.addMedicamentPageCreateButton);
+        EditText stringAmountValue = (EditText) dialog.findViewById(R.id.addMedicamentOtherAmountInput);
+        CheckBox checkboxSpecifyOtherValue = (CheckBox) dialog.findViewById(R.id.checkboxSpecifyOtherValue);
+        ImageButton increaseAmountButton = (ImageButton) dialog.findViewById(R.id.increaseAmountButton);
+        ImageButton decreaseAmountButton = (ImageButton) dialog.findViewById(R.id.decreaseAmountButton);
 
         addButton.setOnClickListener(
                 v -> {
+                    String alertText = "Введите количество препарата";
                     if (name.getText().toString().isEmpty()) {
                         Toast.makeText(this, "Введите название препарата", Toast.LENGTH_SHORT).show();
-                    } else {
+                    } else if (stringAmountValue.getVisibility() == View.GONE && (integerAmountValue.getText().toString().isEmpty() || Integer.parseInt(String.valueOf(integerAmountValue.getText())) < 1)) {
+                        Toast.makeText(this, alertText, Toast.LENGTH_SHORT).show();
+                    } else if (stringAmountValue.getVisibility() == View.VISIBLE && stringAmountValue.getText().toString().isEmpty()) {
+                        Toast.makeText(this, alertText, Toast.LENGTH_SHORT).show();
+                    }
+                    else {
                         String nameFromEditText = name.getText().toString();
                         String descFromEditText = desc.getText().toString();
-//                        MedicineOrganizerServerService.createFirstAndKitForUser(username, nameFromEditText, descFromEditText, new Callback<Collection<FirstAidKit>>() {
-//                            @Override
-//                            public void onResponse(Call<Collection<FirstAidKit>> call, Response<Collection<FirstAidKit>> response) {
-//                                if (response.isSuccessful()) {
-//                                    Optional<Long> maxId = response.body().stream()
-//                                            .map(FirstAidKit::getId)
-//                                            .max(Long::compareTo);
-//                                    if (maxId.isPresent()) {
-//                                        FirstAidKit firstAidKit = new FirstAidKit(maxId.get(), nameFromEditText, descFromEditText, null);
-//                                        adapter.getStorage().add(firstAidKit);
-//                                        adapter.notifyDataSetChanged();
-//                                        dialog.cancel();
-//                                        textNoFak.setVisibility(View.GONE);
-//                                        recyclerView.setVisibility(View.VISIBLE);
-//                                    }
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onFailure(Call<Collection<FirstAidKit>> call, Throwable t) {
-//
-//                            }
-//                        });
+                        String amount = stringAmountValue.getVisibility() == View.VISIBLE ? stringAmountValue.getText().toString() :integerAmountValue.getText().toString();
+                        MedicineOrganizerServerService.addMedicamentWithData(ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getId(),
+                                nameFromEditText, descFromEditText, amount, new Callback<Collection<Medicament>>() {
+                                    @Override
+                                    public void onResponse(Call<Collection<Medicament>> call, Response<Collection<Medicament>> response) {
+                                        adapter.setStorage(response.body());
+                                        ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().setMedicaments(response.body());
+                                        adapter.notifyDataSetChanged();
+                                        setVisibilityIfMedicamentDataSetIsNotEmpty();
+                                        dialog.cancel();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Collection<Medicament>> call, Throwable t) {
+                                        Toast.makeText(getApplicationContext(), "Произошла ошибка при попытке добавления препарата в аптечку", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+
                     }
                 }
         );
 
+        checkboxSpecifyOtherValue.setOnClickListener(v->{
+            if (checkboxSpecifyOtherValue.isChecked()) {
+                increaseAmountButton.setVisibility(View.GONE);
+                decreaseAmountButton.setVisibility(View.GONE);
+                integerAmountValue.setVisibility(View.GONE);
+                stringAmountValue.setVisibility(View.VISIBLE);
+            } else {
+                increaseAmountButton.setVisibility(View.VISIBLE);
+                decreaseAmountButton.setVisibility(View.VISIBLE);
+                integerAmountValue.setVisibility(View.VISIBLE);
+                stringAmountValue.setVisibility(View.GONE);
+            }
+        });
+
+        increaseAmountButton.setOnClickListener(v -> {
+            if (integerAmountValue.getText().length() > 0) {
+                integerAmountValue.setText(String.valueOf(Integer.parseInt(String.valueOf(integerAmountValue.getText())) + 1));
+            } else {
+                integerAmountValue.setText("1");
+            }
+        });
+
+        decreaseAmountButton.setOnClickListener(v -> {
+            if (integerAmountValue.getText().length() > 0 && Integer.parseInt(String.valueOf(integerAmountValue.getText())) > 0) {
+                integerAmountValue.setText(String.valueOf(Integer.parseInt(String.valueOf(integerAmountValue.getText())) - 1));
+            } else {
+                integerAmountValue.setText("0");
+            }
+        });
 
         qr.setOnClickListener(v -> {
             startBarcodeScanner();

@@ -9,7 +9,9 @@ public class RetrofitMedicineOrganizerServerService {
     private static RetrofitMedicineOrganizerServerService retrofitMedicineOrganizerServerService;
     //http://192.168.1.79:8080
     //http://10.0.2.2:8080
-    private static final String BASE_URL = "http://192.168.1.79:8080";
+    //private static final String BASE_URL = "http://192.168.1.79:8080";
+    private static final String BASE_URL = "http://192.168.0.79:8080";
+
     private final Retrofit retrofit;
 
     private RetrofitMedicineOrganizerServerService() {

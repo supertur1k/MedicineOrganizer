@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import dto.AddMedIntoFirstAidKitDTO;
 import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
@@ -44,6 +45,13 @@ public class MedicineOrganizerServerService {
         RetrofitMedicineOrganizerServerService.getInstance()
                 .getApiMainService()
                 .addMedicamentIntoFirstAndKitByBarcode(new AddMedicamentIntoFAKBarcodeRequest(id, barcode))
+                .enqueue(callback);
+    }
+
+    public static void addMedicamentWithData(Long id, String nameOfTheMedicament, String description, String amount, Callback<Collection<Medicament>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .addMedicamentIntoFirstAndKit(new AddMedIntoFirstAidKitDTO(id, nameOfTheMedicament, description, amount))
                 .enqueue(callback);
     }
 

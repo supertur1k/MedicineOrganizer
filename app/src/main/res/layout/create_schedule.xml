@@ -115,7 +115,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/integerAmountValue" />
 
             <EditText
-                android:id="@+id/addScheduleOtherAmountInput"
+                android:id="@+id/addMedicamentOtherAmountInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
@@ -137,7 +137,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/addScheduleOtherAmountInput">
+                app:layout_constraintTop_toBottomOf="@id/addMedicamentOtherAmountInput">
 
                 <CheckBox
                     android:id="@+id/checkboxMonday"
