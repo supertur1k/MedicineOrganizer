@@ -15,6 +15,7 @@ import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
 import dto.FirstAidKitIdUsernameDTO;
+import dto.FirstAidKitIdUsernameDTO2Users;
 import dto.JwtRequest;
 import dto.JwtResponse;
 import dto.Medicament;
@@ -118,12 +119,30 @@ public class MedicineOrganizerServerService {
     }
 
 
-    public static void notificationForAddingExistingFirstAidKitToUser(String username, Long id, Callback<Collection<NotificationDto>> callback) {
+    public static void notificationForAddingExistingFirstAidKitToUser(String username, String inviter, Long id, Callback<Collection<NotificationDto>> callback) {
         RetrofitMedicineOrganizerServerService.getInstance()
                 .getApiMainService()
-                .createNotificationInviteToFak(new FirstAidKitIdUsernameDTO(username, id))
+                .createNotificationInviteToFak(new FirstAidKitIdUsernameDTO2Users(username, inviter, id))
                 .enqueue(callback);
     }
+
+    public static void deleteNotification(Long id, Callback<Collection<NotificationDto>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .deleteNotification(id)
+                .enqueue(callback);
+    }
+
+    public static void readNotification(Long idOfNotification, String username, Callback<Collection<NotificationDto>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .readNotification(idOfNotification, username)
+                .enqueue(callback);
+    }
+
+
+
+
 
 
 

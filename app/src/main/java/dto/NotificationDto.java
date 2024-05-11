@@ -13,6 +13,16 @@ public class NotificationDto {
     private String dayOfTheWeek;
     private String time;
 
+    public Boolean getReceived() {
+        return received;
+    }
+
+    public void setReceived(Boolean received) {
+        this.received = received;
+    }
+
+    private Boolean received;
+
     public Long getIdOfNotification() {
         return idOfNotification;
     }
@@ -21,7 +31,7 @@ public class NotificationDto {
         this.idOfNotification = idOfNotification;
     }
 
-    public NotificationDto(Long idOfNotification, Long idOfTheSchedule, String username, String name, String comment, String amount, String dayOfTheWeek, String time) {
+    public NotificationDto(Long idOfNotification, Long idOfTheSchedule, String username, String name, String comment, String amount, String dayOfTheWeek, String time, Boolean received) {
         this.idOfNotification = idOfNotification;
         this.idOfTheSchedule = idOfTheSchedule;
         this.username = username;
@@ -30,6 +40,7 @@ public class NotificationDto {
         this.amount = amount;
         this.dayOfTheWeek = dayOfTheWeek;
         this.time = time;
+        this.received = received;
     }
 
     public Long getIdOfTheSchedule() {

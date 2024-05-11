@@ -1,6 +1,7 @@
 package com.example.medicineorganizer.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -12,8 +13,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -52,6 +58,8 @@ public class NotificationsPage extends AppCompatActivity implements Notification
     SharedPreferences.Editor editor;
 
     Dialog progressDialog;
+    Dialog notificationDialog;
+
 
 
     @Override
@@ -69,6 +77,8 @@ public class NotificationsPage extends AppCompatActivity implements Notification
         adapter = new NotificationsRecyclerViewAdapter(this, new ArrayList<>());
         adapter.setClickListener(this);
         recyclerViewNotifications.setAdapter(adapter);
+
+        notificationDialog = new Dialog(NotificationsPage.this);
 
         fillStorageOfNotifications();
     }
@@ -124,9 +134,98 @@ public class NotificationsPage extends AppCompatActivity implements Notification
 
     @Override
     public void onItemClick(View view, int position) {
-        String alert = adapter.getStorage().get(position).getName() + "\nПринять в количестве: " + adapter.getStorage().get(position).getAmount()
-                + "\nВремя: " + adapter.getStorage().get(position).getTime();
-        Toast.makeText(this, alert, Toast.LENGTH_LONG).show();
+        notificationDialog.setContentView(R.layout.notification_dialog);
+        notificationDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        notificationDialog.setCancelable(true);
+
+        ConstraintLayout acceptAndDeclineButtonsContainer = notificationDialog.findViewById(R.id.acceptAndDeclineButtonsContainer);
+        Button acceptButton = notificationDialog.findViewById(R.id.acceptButton);
+        Button declineButton = notificationDialog.findViewById(R.id.declineButton);
+        Button readNotification = notificationDialog.findViewById(R.id.readNotification);
+
+        declineButton.setOnClickListener(v -> {
+            showProgressDialog();
+            MedicineOrganizerServerService.deleteNotification(adapter.getStorage().get(position).getIdOfNotification(), new Callback<Collection<NotificationDto>>() {
+                @Override
+                public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
+                    hideProgressDialog();
+                    if (response.isSuccessful()) {
+                        fillStorageOfNotifications();
+                        notificationDialog.cancel();
+                    } else {
+                        if (response.errorBody() != null) {
+                            try {
+                                Gson gson = new Gson();
+                                AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                                Toast.makeText(getApplicationContext(), appError.getMessage(), Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Collection<NotificationDto>> call, Throwable t) {
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        readNotification.setOnClickListener(v -> {
+            MedicineOrganizerServerService.readNotification(adapter.getStorage().get(position).getIdOfNotification(), sharedPreferences.getString("username", "empty_username"), new Callback<Collection<NotificationDto>>() {
+                @Override
+                public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
+                    if (response.isSuccessful()) {
+                        fillStorageOfNotifications();
+                        notificationDialog.cancel();
+                    } else {
+                        if (response.errorBody() != null) {
+                            try {
+                                Gson gson = new Gson();
+                                AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                                Toast.makeText(getApplicationContext(), appError.getMessage(), Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<Collection<NotificationDto>> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+        TextView notificationText = notificationDialog.findViewById(R.id.notificationText);
+
+        String notificationTextValue = "Приглашение в аптечку";
+        if (adapter.getStorage().get(position).getName().equals("Приглашение в аптечку")) {
+            acceptAndDeclineButtonsContainer.setVisibility(View.VISIBLE);
+            readNotification.setVisibility(View.GONE);
+            notificationTextValue = String.format("Пользователь %s приглашает Вас в аптечку", adapter.getStorage().get(position).getComment().replace("system_user_invite_from", ""));
+        } else {
+            acceptAndDeclineButtonsContainer.setVisibility(View.GONE);
+            readNotification.setVisibility(View.VISIBLE);
+            notificationTextValue = adapter.getStorage().get(position).getName() + "\nПринять в количестве: " + adapter.getStorage().get(position).getAmount()
+                    + "\nВремя: " + adapter.getStorage().get(position).getTime() + "\n";
+        }
+        notificationText.setText(notificationTextValue);
+
+
+        ImageButton notificationCloseButton = notificationDialog.findViewById(R.id.notificationCloseButton);
+        notificationCloseButton.setOnClickListener(v -> {
+            notificationDialog.cancel();
+        });
+
+        notificationDialog.show();
     }
 
     public interface ItemClickListener {

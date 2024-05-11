@@ -194,7 +194,9 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
             if (username.isEmpty()) {
                 Toast.makeText(this, "Введите имя пользователя", Toast.LENGTH_SHORT).show();
             } else {
-                MedicineOrganizerServerService.notificationForAddingExistingFirstAidKitToUser(username, ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getId(), new Callback<Collection<NotificationDto>>() {
+                MedicineOrganizerServerService.notificationForAddingExistingFirstAidKitToUser(
+                        username, sharedPreferences.getString("username", ""),
+                        ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getId(), new Callback<Collection<NotificationDto>>() {
                     @Override
                     public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
                         if (response.isSuccessful()) {

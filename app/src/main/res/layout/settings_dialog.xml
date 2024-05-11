@@ -178,6 +178,7 @@
                     android:maxLines="6"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
+                    android:layout_marginEnd="8dp"
                     android:text="Пользователь с указанным именем получит уведомление. После принятия приглашения в аптечку, он станет полноправным владельцем аптечки."
                     android:textSize="11sp"
                     android:textStyle="italic"

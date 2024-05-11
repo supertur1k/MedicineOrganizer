@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.medicineorganizer.R;
@@ -53,6 +54,8 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
         String notificationText;
         if (notificationDto.getName().equals("Приглашение в аптечку")) {
             notificationText = notificationDto.getName();
+            int resourceId = layoutInflater.getContext().getResources().getIdentifier("baseline_notification_add_24", "drawable", "com.example.medicineorganizer");
+            holder.notificationImage.setImageDrawable(ContextCompat.getDrawable(layoutInflater.getContext(),resourceId));
         } else {
             notificationText = notificationDto.getName() + "\nПринять в количестве: " + notificationDto.getAmount()
                     + "\nВремя: " + notificationDto.getTime();
@@ -68,9 +71,11 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView notificationName;
+        ImageView notificationImage;
         ViewHolder(View itemView) {
             super(itemView);
             notificationName = itemView.findViewById(R.id.viewPageNotificationName);
+            notificationImage = itemView.findViewById(R.id.viewPageNotificationImage);
             itemView.setOnClickListener(this);
         }
 

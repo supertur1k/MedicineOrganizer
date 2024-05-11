@@ -8,6 +8,7 @@ import dto.AddMedicamentIntoFAKBarcodeRequest;
 import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
 import dto.FirstAidKitIdUsernameDTO;
+import dto.FirstAidKitIdUsernameDTO2Users;
 import dto.Medicament;
 import dto.NotificationDto;
 import dto.ScheduleCreateRequestDTO;
@@ -53,6 +54,13 @@ public interface ApiMainService {
     Call<Collection<FirstAidKit>> removeFirstAndFromForUser(@Body FirstAidKitIdUsernameDTO firstAidKitIdUsernameDTO);
 
     @POST("/createNotificationInviteToFak")
-    Call<Collection<NotificationDto>> createNotificationInviteToFak(@Body FirstAidKitIdUsernameDTO firstAidKitIdUsernameDTO);
+    Call<Collection<NotificationDto>> createNotificationInviteToFak(@Body FirstAidKitIdUsernameDTO2Users firstAidKitIdUsernameDTO2Users);
+
+    @DELETE("/deleteNotification")
+    Call<Collection<NotificationDto>> deleteNotification(@Query("id") Long id);
+
+    @POST("/readNotification")
+    Call<Collection<NotificationDto>> readNotification(@Query("id") Long idOfNotification, @Query("username") String username);
+
 
 }
