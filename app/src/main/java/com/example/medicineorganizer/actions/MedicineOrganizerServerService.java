@@ -133,6 +133,14 @@ public class MedicineOrganizerServerService {
                 .enqueue(callback);
     }
 
+    public static void addAnExistingFirstAidKitToUser(String username, Long id, Callback<Collection<NotificationDto>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .addExistingFirstAidKitToUser(new FirstAidKitIdUsernameDTO(username, id))
+                .enqueue(callback);
+    }
+
+
     public static void readNotification(Long idOfNotification, String username, Callback<Collection<NotificationDto>> callback) {
         RetrofitMedicineOrganizerServerService.getInstance()
                 .getApiMainService()

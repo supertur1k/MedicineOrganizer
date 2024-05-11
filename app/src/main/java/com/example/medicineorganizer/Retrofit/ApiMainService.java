@@ -59,6 +59,9 @@ public interface ApiMainService {
     @DELETE("/deleteNotification")
     Call<Collection<NotificationDto>> deleteNotification(@Query("id") Long id);
 
+    @POST("/addExistingFirstAidKitToUser")
+    Call<Collection<NotificationDto>> addExistingFirstAidKitToUser(@Body FirstAidKitIdUsernameDTO firstAidKitIdUsernameDTO);
+
     @POST("/readNotification")
     Call<Collection<NotificationDto>> readNotification(@Query("id") Long idOfNotification, @Query("username") String username);
 

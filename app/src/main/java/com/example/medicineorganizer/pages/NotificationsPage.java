@@ -142,16 +142,19 @@ public class NotificationsPage extends AppCompatActivity implements Notification
         Button acceptButton = notificationDialog.findViewById(R.id.acceptButton);
         Button declineButton = notificationDialog.findViewById(R.id.declineButton);
         Button readNotification = notificationDialog.findViewById(R.id.readNotification);
+        TextView alreadyRead = notificationDialog.findViewById(R.id.alreadyRead);
 
-        declineButton.setOnClickListener(v -> {
+        acceptButton.setOnClickListener(v -> {
             showProgressDialog();
-            MedicineOrganizerServerService.deleteNotification(adapter.getStorage().get(position).getIdOfNotification(), new Callback<Collection<NotificationDto>>() {
+            MedicineOrganizerServerService.addAnExistingFirstAidKitToUser(
+                    sharedPreferences.getString("username", "empty_username"), adapter.getStorage().get(position).getIdOfTheSchedule(), new Callback<Collection<NotificationDto>>() {
                 @Override
                 public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
                     hideProgressDialog();
                     if (response.isSuccessful()) {
-                        fillStorageOfNotifications();
                         notificationDialog.cancel();
+                        deleteNotificationFromUser(position);
+                        fillStorageOfNotifications();
                     } else {
                         if (response.errorBody() != null) {
                             try {
@@ -174,14 +177,21 @@ public class NotificationsPage extends AppCompatActivity implements Notification
                 }
             });
         });
+        declineButton.setOnClickListener(v -> {
+            showProgressDialog();
+            deleteNotificationFromUser(position);
+        });
 
         readNotification.setOnClickListener(v -> {
+            showProgressDialog();
             MedicineOrganizerServerService.readNotification(adapter.getStorage().get(position).getIdOfNotification(), sharedPreferences.getString("username", "empty_username"), new Callback<Collection<NotificationDto>>() {
                 @Override
                 public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
+                    hideProgressDialog();
                     if (response.isSuccessful()) {
+                        alreadyRead.setVisibility(View.VISIBLE);
+                        readNotification.setVisibility(View.GONE);
                         fillStorageOfNotifications();
-                        notificationDialog.cancel();
                     } else {
                         if (response.errorBody() != null) {
                             try {
@@ -200,6 +210,7 @@ public class NotificationsPage extends AppCompatActivity implements Notification
 
                 @Override
                 public void onFailure(Call<Collection<NotificationDto>> call, Throwable t) {
+                    hideProgressDialog();
                     Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -216,6 +227,10 @@ public class NotificationsPage extends AppCompatActivity implements Notification
             readNotification.setVisibility(View.VISIBLE);
             notificationTextValue = adapter.getStorage().get(position).getName() + "\nПринять в количестве: " + adapter.getStorage().get(position).getAmount()
                     + "\nВремя: " + adapter.getStorage().get(position).getTime() + "\n";
+            if (adapter.getStorage().get(position).getReceived()) {
+                alreadyRead.setVisibility(View.VISIBLE);
+                readNotification.setVisibility(View.GONE);
+            }
         }
         notificationText.setText(notificationTextValue);
 
@@ -228,6 +243,37 @@ public class NotificationsPage extends AppCompatActivity implements Notification
         notificationDialog.show();
     }
 
+    private void deleteNotificationFromUser(int position) {
+        showProgressDialog();
+        MedicineOrganizerServerService.deleteNotification(adapter.getStorage().get(position).getIdOfNotification(), new Callback<Collection<NotificationDto>>() {
+            @Override
+            public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
+                hideProgressDialog();
+                if (response.isSuccessful()) {
+                    fillStorageOfNotifications();
+                    notificationDialog.cancel();
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            Gson gson = new Gson();
+                            AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                            Toast.makeText(getApplicationContext(), appError.getMessage(), Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Collection<NotificationDto>> call, Throwable t) {
+                hideProgressDialog();
+                Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }
