@@ -91,6 +91,7 @@
 
 
 
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/viewPageSettingsCLayout"
                 android:layout_width="match_parent"
@@ -119,7 +120,7 @@
 
                 <ScrollView
                     android:id="@+id/viewPageContraIndicationsScrollView"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="40dp"
                     app:layout_constraintTop_toBottomOf="@+id/settingsDescription"
                     app:layout_constraintStart_toStartOf="parent"
@@ -143,6 +144,108 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/addUserCL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/viewPageSettingsCLayout">
+
+                <TextView
+                    android:id="@+id/addUserCLHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="Пригласить пользователя\nв аптечку"
+                    android:textSize="15sp"
+                    android:textStyle="italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/addUserCLHeaderDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="6"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="Пользователь с указанным именем получит уведомление. После принятия приглашения в аптечку, он станет полноправным владельцем аптечки."
+                    android:textSize="11sp"
+                    android:textStyle="italic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/addUserCLHeader" />
+
+                <ImageButton
+                    android:id="@+id/reminderPageImageViewAdd"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="2dp"
+                    android:src="@drawable/ic_add"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/addUserCLHeader"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/usernameInput"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:hint="Введите имя пользователя "
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="8dp"
+                    android:textSize="15sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/addUserCLHeaderDesc" />
+
+                <Button
+                    android:id="@+id/inviteUserToFakButton"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:backgroundTint="@color/saladGreen"
+                    android:text="Пригласить пользователя"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/usernameInput">
+
+                </Button>
+
+                <TextView
+                    android:id="@+id/inviteSend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:text="Приглашение успешно отправлено"
+                    android:textColor="@color/redButton"
+                    android:textSize="13sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/inviteUserToFakButton" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
             <Button
                 android:id="@+id/deleteFAKButton"
                 android:layout_width="190dp"
@@ -155,7 +258,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/viewPageSettingsCLayout">
+                app:layout_constraintTop_toBottomOf="@+id/addUserCL">
 
             </Button>
         </androidx.constraintlayout.widget.ConstraintLayout>

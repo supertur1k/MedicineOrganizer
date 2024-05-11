@@ -118,5 +118,13 @@ public class MedicineOrganizerServerService {
     }
 
 
+    public static void notificationForAddingExistingFirstAidKitToUser(String username, Long id, Callback<Collection<NotificationDto>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .createNotificationInviteToFak(new FirstAidKitIdUsernameDTO(username, id))
+                .enqueue(callback);
+    }
+
+
 
 }

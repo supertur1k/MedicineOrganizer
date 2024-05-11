@@ -52,5 +52,7 @@ public interface ApiMainService {
     @HTTP(method = "DELETE", path = "/removeFirstAndFromForUser", hasBody = true)
     Call<Collection<FirstAidKit>> removeFirstAndFromForUser(@Body FirstAidKitIdUsernameDTO firstAidKitIdUsernameDTO);
 
+    @POST("/createNotificationInviteToFak")
+    Call<Collection<NotificationDto>> createNotificationInviteToFak(@Body FirstAidKitIdUsernameDTO firstAidKitIdUsernameDTO);
 
 }

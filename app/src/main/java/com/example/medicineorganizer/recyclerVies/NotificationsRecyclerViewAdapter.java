@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,8 +50,14 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         NotificationDto notificationDto = storage.get(position);
-        holder.notificationName.setText(notificationDto.getName() + "\nПринять в количестве: " + notificationDto.getAmount()
-                + "\nВремя: " + notificationDto.getTime());
+        String notificationText;
+        if (notificationDto.getName().equals("Приглашение в аптечку")) {
+            notificationText = notificationDto.getName();
+        } else {
+            notificationText = notificationDto.getName() + "\nПринять в количестве: " + notificationDto.getAmount()
+                    + "\nВремя: " + notificationDto.getTime();
+        }
+        holder.notificationName.setText(notificationText);
     }
 
     @Override

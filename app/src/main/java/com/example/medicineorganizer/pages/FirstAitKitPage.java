@@ -1,5 +1,7 @@
 package com.example.medicineorganizer.pages;
 
+import static java.security.AccessController.getContext;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
@@ -36,17 +38,24 @@ import com.example.medicineorganizer.R;
 import com.example.medicineorganizer.Retrofit.RetrofitMedicineOrganizerServerService;
 import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
+import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
+import com.example.medicineorganizer.data.SchedulesDataHolder;
 import com.example.medicineorganizer.recyclerVies.MedicinesRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import dto.AppError;
 import dto.FirstAidKit;
 import dto.FirstAidKitIdUsernameDTO;
 import dto.Medicament;
+import dto.NotificationDto;
+import dto.ScheduleCreateResponseDTO;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -167,6 +176,63 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
                         }
                     });
         });
+
+        ImageButton addUser = (ImageButton) settingsDialog.findViewById(R.id.reminderPageImageViewAdd);
+        Button inviteUserToFakButton = (Button) settingsDialog.findViewById(R.id.inviteUserToFakButton);
+        TextView inviteSend = (TextView) settingsDialog.findViewById(R.id.inviteSend);
+        EditText usernameInput = (EditText) settingsDialog.findViewById(R.id.usernameInput);
+
+        addUser.setOnClickListener(v -> {
+            inviteSend.setVisibility(View.GONE);
+            inviteUserToFakButton.setVisibility(View.VISIBLE);
+            usernameInput.setText("");
+            usernameInput.setVisibility(View.VISIBLE);
+        });
+
+        inviteUserToFakButton.setOnClickListener(v -> {
+            String username = usernameInput.getText().toString();
+            if (username.isEmpty()) {
+                Toast.makeText(this, "Введите имя пользователя", Toast.LENGTH_SHORT).show();
+            } else {
+                MedicineOrganizerServerService.notificationForAddingExistingFirstAidKitToUser(username, ActiveFirstAidKitDataHolder.getInstance().getFirstAidKit().getId(), new Callback<Collection<NotificationDto>>() {
+                    @Override
+                    public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
+                        if (response.isSuccessful()) {
+                            inviteSend.setText(String.format("Приглашение пользователю %s успешно отправлено", username));
+                            inviteSend.setVisibility(View.VISIBLE);
+                            inviteSend.setTextColor(getResources().getColor(R.color.saladGreen, getApplicationContext().getTheme()));
+                            inviteUserToFakButton.setVisibility(View.GONE);
+                            usernameInput.setVisibility(View.GONE);
+                        } else {
+                            inviteSend.setTextColor(getResources().getColor(R.color.redButton, getApplicationContext().getTheme()));
+                            if (response.errorBody() != null) {
+                                try {
+                                    Gson gson = new Gson();
+                                    AppError appError = gson.fromJson(response.errorBody().string(), AppError.class);
+                                    if (appError.getMessage().equals("Пользователь не найден")) {
+                                        inviteSend.setText(String.format("Пользователь %s не найден", username));
+                                        inviteSend.setVisibility(View.VISIBLE);
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                inviteSend.setTextColor(getResources().getColor(R.color.redButton, getApplicationContext().getTheme()));
+                                Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Collection<NotificationDto>> call, Throwable t) {
+                        inviteSend.setTextColor(getResources().getColor(R.color.redButton, getApplicationContext().getTheme()));
+                        Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        });
+
 
         settingsDialog.show();
     }
