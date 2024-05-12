@@ -16,12 +16,18 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +44,10 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import dto.AppError;
 import dto.ListFaksDto;
@@ -54,13 +63,15 @@ public class HistoryPage extends AppCompatActivity implements HistoryRecyclerVie
     LinearLayout mainPage, notifications, reminder, logout, history;
     BottomNavigationView bottomNavigationView;
     TextView historyNoDataMessage;
-
+    ConstraintLayout historyCLFilter;
     Dialog progressDialog;
     RecyclerView recyclerViewHistory;
     HistoryRecyclerViewAdapter adapter;
     SharedPreferences sharedPreferences;
     Dialog historyDialog;
-
+    Spinner spinner;
+    List<String> formsArray;
+    EditText historyFilterName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,16 +80,75 @@ public class HistoryPage extends AppCompatActivity implements HistoryRecyclerVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         setMenuClickListeners();
-        getSchedulesForUserFak();
 
+        historyCLFilter = (ConstraintLayout) findViewById(R.id.historyCLFilter);
         historyNoDataMessage = (TextView) findViewById(R.id.historyNoDataMessage);
         recyclerViewHistory = (RecyclerView) findViewById(R.id.historyRecyclerView);
         recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this));
         adapter = new HistoryRecyclerViewAdapter(this, new ArrayList<>());
         adapter.setClickListener(this);
         recyclerViewHistory.setAdapter(adapter);
-
+        historyFilterName = (EditText) findViewById(R.id.historyFilterName);
         historyDialog = new Dialog(HistoryPage.this);
+
+        formsArray = new ArrayList<>();
+        spinner = findViewById(R.id.historySpinnerFilter);
+        formsArray.add("Все");
+
+        Set<String> setOfUsers= new HashSet<String>();
+        adapter.getStorage().forEach(x->setOfUsers.add(x.getUsername()));
+        formsArray.addAll(setOfUsers);
+
+        ArrayAdapter<String> adapterArray = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, formsArray);
+        adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapterArray);
+        addSpinnerListener();
+
+        getSchedulesForUserFak();
+        addFilterListener();
+    }
+
+    private void addFilterListener() {
+        historyFilterName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable == null || editable.toString().isEmpty() || editable.toString().length() < 1) {
+                    adapter.setStorage(HistoryDataHolder.getInstance().getNotifications());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.setStorage(HistoryDataHolder.getInstance().getNotifications().stream().filter(x->x.getName().startsWith(editable.toString())).collect(Collectors.toList()));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+    private void addSpinnerListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedItem = formsArray.get(position);
+                if (selectedItem.equals("Все")) {
+                    adapter.setStorage(HistoryDataHolder.getInstance().getNotifications());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.setStorage(HistoryDataHolder.getInstance().getNotifications().stream().filter(x -> x.getUsername().equals(selectedItem)).collect(Collectors.toList()));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
 
     }
 
@@ -89,9 +159,11 @@ public class HistoryPage extends AppCompatActivity implements HistoryRecyclerVie
         if (notifications.size() > 0) {
             historyNoDataMessage.setVisibility(View.GONE);
             recyclerViewHistory.setVisibility(View.VISIBLE);
+            historyCLFilter.setVisibility(View.VISIBLE);
         } else {
             historyNoDataMessage.setVisibility(View.VISIBLE);
             recyclerViewHistory.setVisibility(View.GONE);
+            historyCLFilter.setVisibility(View.GONE);
         }
     }
 
@@ -144,6 +216,9 @@ public class HistoryPage extends AppCompatActivity implements HistoryRecyclerVie
             public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
                 hideProgressDialog();
                 if (response.isSuccessful()) {
+                    Set<String> setOfUsers = new HashSet<>();
+                    response.body().forEach(x->setOfUsers.add(x.getUsername()));
+                    formsArray.addAll(setOfUsers);
                     HistoryDataHolder.getInstance().setNotifications(response.body());
                     fillStorage();
                 } else {
