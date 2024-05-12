@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
     ImageView menu;
     TextView textNoFak;
     EditText fakSearchInput;
-    LinearLayout mainPage, notifications, reminder, logout;
+    LinearLayout mainPage, notifications, reminder, logout, history;
     BottomNavigationView bottomNavigationView;
     Button addFirstAidKitButton;
     Dialog dialog;
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
         mainPage = findViewById(R.id.mainPage);
         reminder = findViewById(R.id.medicationReminder);
         logout = findViewById(R.id.logout);
+        history = findViewById(R.id.history);
 
         bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setSelectedItemId(R.id.navBarMenuMain);
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
         notifications.setOnClickListener(v -> redirectActivity(MainActivity.this, NotificationsPage.class));
         reminder.setOnClickListener(v -> redirectActivity(MainActivity.this, ReminderPage.class));
         logout.setOnClickListener(v -> redirectActivity(MainActivity.this, LoginPageActivity.class));
+        history.setOnClickListener(v -> redirectActivity(MainActivity.this, HistoryPage.class));
 
     }
     public static void openDrawer(DrawerLayout drawerLayout) {

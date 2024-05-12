@@ -49,7 +49,7 @@ public class NotificationsPage extends AppCompatActivity implements Notification
 
     DrawerLayout drawerLayout;
     ImageView menu;
-    LinearLayout mainPage, notifications, reminder, logout;
+    LinearLayout mainPage, notifications, reminder, logout, history;
     BottomNavigationView bottomNavigationView;
     RecyclerView recyclerViewNotifications;
     TextView notificationsNoData;
@@ -279,6 +279,7 @@ public class NotificationsPage extends AppCompatActivity implements Notification
         mainPage = findViewById(R.id.mainPage);
         reminder = findViewById(R.id.medicationReminder);
         logout = findViewById(R.id.logout);
+        history = findViewById(R.id.history);
 
         bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setSelectedItemId(R.id.navBarMenuNotifications);
@@ -288,6 +289,7 @@ public class NotificationsPage extends AppCompatActivity implements Notification
         mainPage.setOnClickListener(v -> redirectActivity(NotificationsPage.this, MainActivity.class));
         reminder.setOnClickListener(v -> redirectActivity(NotificationsPage.this, ReminderPage.class));
         logout.setOnClickListener(v -> redirectActivity(NotificationsPage.this, LoginPageActivity.class));
+        history.setOnClickListener(v -> redirectActivity(NotificationsPage.this, HistoryPage.class));
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);

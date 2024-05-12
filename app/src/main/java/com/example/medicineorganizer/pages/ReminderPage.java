@@ -59,7 +59,7 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
 
     DrawerLayout drawerLayout;
     ImageView menu;
-    LinearLayout mainPage, notifications, reminder, logout;
+    LinearLayout mainPage, notifications, reminder, logout, history;
     BottomNavigationView bottomNavigationView;
     ImageButton reminderPageImageViewAdd;
     Dialog dialogCreateSchedule;
@@ -418,6 +418,7 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
         mainPage = findViewById(R.id.mainPage);
         reminder = findViewById(R.id.medicationReminder);
         logout = findViewById(R.id.logout);
+        history = findViewById(R.id.history);
 
         bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setSelectedItemId(R.id.navBarMenuReminder);
@@ -427,6 +428,7 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
         notifications.setOnClickListener(v -> redirectActivity(ReminderPage.this, NotificationsPage.class));
         mainPage.setOnClickListener(v -> redirectActivity(ReminderPage.this, MainActivity.class));
         logout.setOnClickListener(v -> redirectActivity(ReminderPage.this, LoginPageActivity.class));
+        history.setOnClickListener(v -> redirectActivity(ReminderPage.this, HistoryPage.class));
 
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
