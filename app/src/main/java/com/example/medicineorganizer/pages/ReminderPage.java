@@ -485,6 +485,8 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
         nameOfTheSchedule.setText(schedulesAdapter.getStorage().get(position).getName());
         TextView scheduleDuration = (TextView) dialogViewSchedule.findViewById(R.id.viewPageScheduleDurationValue);
         scheduleDuration.setText(String.valueOf(schedulesAdapter.getStorage().get(position).getDuration()));
+        TextView viewPageScheduleStartDateValue = (TextView) dialogViewSchedule.findViewById(R.id.viewPageScheduleStartDateValue);
+        viewPageScheduleStartDateValue.setText(String.valueOf(schedulesAdapter.getStorage().get(position).getStartDate()));
 
         List<String> daysList = schedulesAdapter.getStorage().get(position).getDaysOfWeeks().stream()
                 .map(x -> x.replace("monday", "Пн"))

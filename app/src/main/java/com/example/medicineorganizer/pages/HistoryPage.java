@@ -203,7 +203,7 @@ public class HistoryPage extends AppCompatActivity implements HistoryRecyclerVie
         mainPage.setOnClickListener(v -> redirectActivity(HistoryPage.this, MainActivity.class));
         reminder.setOnClickListener(v -> redirectActivity(HistoryPage.this, ReminderPage.class));
         logout.setOnClickListener(v -> redirectActivity(HistoryPage.this, LoginPageActivity.class));
-        history.setOnClickListener(v -> recreate());
+        history.setOnClickListener(v -> redirectActivity(HistoryPage.this, HistoryPage.class));
     }
 
     private void getSchedulesForUserFak() {

@@ -7,6 +7,15 @@ public class ScheduleCreateResponseDTO {
     private Long idOfSchedule;
     private String username;
     private String name;
+    private String startDate;
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
 
     public Long getIdOfSchedule() {
         return idOfSchedule;
@@ -16,7 +25,7 @@ public class ScheduleCreateResponseDTO {
         this.idOfSchedule = idOfSchedule;
     }
 
-    public ScheduleCreateResponseDTO(Long idOfSchedule, String username, String name, String comment, String amount, Integer duration, List<String> daysOfWeeks, List<String> times) {
+    public ScheduleCreateResponseDTO(Long idOfSchedule, String username, String name, String comment, String amount, Integer duration, List<String> daysOfWeeks, List<String> times, String startDate) {
         this.idOfSchedule = idOfSchedule;
         this.username = username;
         this.name = name;
@@ -25,6 +34,7 @@ public class ScheduleCreateResponseDTO {
         this.duration = duration;
         this.daysOfWeeks = daysOfWeeks;
         this.times = times;
+        this.startDate = startDate;
     }
 
     public String getUsername() {
