@@ -9,6 +9,7 @@ import dto.FirstAidKit;
 import dto.FirstAidKitCreateRequestDTO;
 import dto.FirstAidKitIdUsernameDTO;
 import dto.FirstAidKitIdUsernameDTO2Users;
+import dto.ListFaksDto;
 import dto.Medicament;
 import dto.NotificationDto;
 import dto.ScheduleCreateRequestDTO;
@@ -61,6 +62,9 @@ public interface ApiMainService {
 
     @POST("/addExistingFirstAidKitToUser")
     Call<Collection<NotificationDto>> addExistingFirstAidKitToUser(@Body FirstAidKitIdUsernameDTO firstAidKitIdUsernameDTO);
+
+    @POST("/getNotificationsOfAllUsersOfFaks")
+    Call<Collection<NotificationDto>> getNotificationsOfAllUsersOfFaks(@Body ListFaksDto ids);
 
     @POST("/readNotification")
     Call<Collection<NotificationDto>> readNotification(@Query("id") Long idOfNotification, @Query("username") String username);

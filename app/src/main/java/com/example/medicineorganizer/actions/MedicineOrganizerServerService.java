@@ -18,6 +18,7 @@ import dto.FirstAidKitIdUsernameDTO;
 import dto.FirstAidKitIdUsernameDTO2Users;
 import dto.JwtRequest;
 import dto.JwtResponse;
+import dto.ListFaksDto;
 import dto.Medicament;
 import dto.NotificationDto;
 import dto.ScheduleCreateRequestDTO;
@@ -139,6 +140,15 @@ public class MedicineOrganizerServerService {
                 .addExistingFirstAidKitToUser(new FirstAidKitIdUsernameDTO(username, id))
                 .enqueue(callback);
     }
+
+    public static void getNotificationsOfAllUsersOfFaks(List<Long> ids, Callback<Collection<NotificationDto>> callback) {
+        RetrofitMedicineOrganizerServerService.getInstance()
+                .getApiMainService()
+                .getNotificationsOfAllUsersOfFaks(new ListFaksDto(ids))
+                .enqueue(callback);
+    }
+
+
 
 
     public static void readNotification(Long idOfNotification, String username, Callback<Collection<NotificationDto>> callback) {

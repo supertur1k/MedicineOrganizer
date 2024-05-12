@@ -71,7 +71,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
     DrawerLayout drawerLayout;
     ImageView menu;
     ImageButton settingsButton;
-    LinearLayout mainPage, notifications, reminder, logout;
+    LinearLayout mainPage, notifications, reminder, logout, history;
     BottomNavigationView bottomNavigationView;
     Dialog dialog;
     Dialog dialogMedicament;
@@ -558,6 +558,7 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
         mainPage = findViewById(R.id.mainPage);
         reminder = findViewById(R.id.medicationReminder);
         logout = findViewById(R.id.logout);
+        history = findViewById(R.id.history);
 
         bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setSelectedItemId(R.id.navBarMenuMain);
@@ -567,6 +568,8 @@ public class FirstAitKitPage extends AppCompatActivity implements MedicinesRecyc
         mainPage.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, MainActivity.class));
         reminder.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, ReminderPage.class));
         logout.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, LoginPageActivity.class));
+        history.setOnClickListener(v -> redirectActivity(FirstAitKitPage.this, HistoryPage.class));
+
     }
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);
