@@ -145,16 +145,13 @@ public class NotificationsPage extends AppCompatActivity implements Notification
         TextView alreadyRead = notificationDialog.findViewById(R.id.alreadyRead);
 
         acceptButton.setOnClickListener(v -> {
-            showProgressDialog();
             MedicineOrganizerServerService.addAnExistingFirstAidKitToUser(
                     sharedPreferences.getString("username", "empty_username"), adapter.getStorage().get(position).getIdOfTheSchedule(), new Callback<Collection<NotificationDto>>() {
                 @Override
                 public void onResponse(Call<Collection<NotificationDto>> call, Response<Collection<NotificationDto>> response) {
-                    hideProgressDialog();
                     if (response.isSuccessful()) {
-                        notificationDialog.cancel();
                         deleteNotificationFromUser(position);
-                        fillStorageOfNotifications();
+                        notificationDialog.cancel();
                     } else {
                         if (response.errorBody() != null) {
                             try {
@@ -172,13 +169,11 @@ public class NotificationsPage extends AppCompatActivity implements Notification
 
                 @Override
                 public void onFailure(Call<Collection<NotificationDto>> call, Throwable t) {
-                    hideProgressDialog();
                     Toast.makeText(getApplicationContext(), "Произошла ошибка", Toast.LENGTH_SHORT).show();
                 }
             });
         });
         declineButton.setOnClickListener(v -> {
-            showProgressDialog();
             deleteNotificationFromUser(position);
         });
 
