@@ -1,13 +1,16 @@
 package com.example.medicineorganizer.pages;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -22,6 +25,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -36,10 +42,13 @@ import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.example.medicineorganizer.data.SchedulesDataHolder;
 import com.example.medicineorganizer.recyclerVies.SchedulesRecyclerViewAdapter;
+import com.example.medicineorganizer.schedule.NotificationScheduler;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -107,7 +116,31 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
         fillRecyclerView();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void scheduleNotifications(ScheduleCreateRequestDTO scheduleDto) {
+        List<String> messages = new ArrayList<>();
+        List<LocalDateTime> notificationTimes = new ArrayList<>();
 
+        for (int i = 0; i < scheduleDto.getDuration(); i++) {
+            if (scheduleDto.getDaysOfWeeks().contains(LocalDateTime.now().plusDays(i).getDayOfWeek().toString().toLowerCase())) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm");
+
+                String localDateTime = LocalDateTime.now().plusDays(i).format(formatter);
+                scheduleDto.getTimes().forEach(x -> {
+                    String finalDate = localDateTime + x;
+                    LocalDateTime dateTime = LocalDateTime.parse(finalDate, formatterWithTime);
+                    notificationTimes.add(dateTime);
+                });
+                Log.d("debuggger", String.format("Примите лекарство %s в количестве %s", scheduleDto.getName(), scheduleDto.getAmount()));
+                messages.add(String.format("Примите лекарство %s в количестве %s", scheduleDto.getName(), scheduleDto.getAmount()));
+            }
+        }
+
+        for (int i = 0; i < notificationTimes.size(); i++) {
+            NotificationScheduler.scheduleNotification(this, messages.get(i), notificationTimes.get(i));
+        }
+    }
     private void fillRecyclerView() {
         MedicineOrganizerServerService.getSchedule(sharedPreferences.getString("username", "empty_username")
                 , new Callback<Collection<ScheduleCreateResponseDTO>>() {
@@ -135,6 +168,7 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     private void addSchedule() {
         timePickerValues = new HashMap<>();
         dialogCreateSchedule.setContentView(R.layout.create_schedule);
@@ -339,6 +373,13 @@ public class ReminderPage extends AppCompatActivity implements SchedulesRecycler
             }
             scheduleDto.setTimes(times);
             scheduleDto.setUsername(sharedPreferences.getString("username", "empty_username"));
+
+
+            if (getSystemService(AlarmManager.class).canScheduleExactAlarms()) {
+                scheduleNotifications(scheduleDto);
+            } else {
+                Toast.makeText(this, "Разрешите отправку уведомлений", Toast.LENGTH_SHORT).show();
+            }
 
             showProgressDialog();
             MedicineOrganizerServerService.createSchedule(scheduleDto, new Callback<Collection<ScheduleCreateResponseDTO>>() {

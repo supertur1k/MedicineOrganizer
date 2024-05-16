@@ -1,6 +1,7 @@
 package com.example.medicineorganizer.pages;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -31,10 +34,14 @@ import com.example.medicineorganizer.actions.MedicineOrganizerServerService;
 import com.example.medicineorganizer.data.ActiveFirstAidKitDataHolder;
 import com.example.medicineorganizer.data.FirstAidKitsDataHolder;
 import com.example.medicineorganizer.recyclerVies.FirstAidKitsRecyclerViewAdapter;
+import com.example.medicineorganizer.schedule.NotificationScheduler;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +51,11 @@ import dto.FirstAidKit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import android.Manifest;
+import android.content.Intent;
+import android.os.Build;
+import android.provider.Settings;
 
 public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyclerViewAdapter.ItemClickListener{
     DrawerLayout drawerLayout;
@@ -63,11 +75,35 @@ public class MainActivity extends AppCompatActivity implements FirstAidKitsRecyc
 
     String username;
 
+    private static final String TAG = "MainActivity";
+
+    private ActivityResultLauncher<Intent> scheduleExactAlarmPermissionLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        scheduleExactAlarmPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            if (getSystemService(AlarmManager.class).canScheduleExactAlarms()) {
+                                return;
+                            } else {
+                                Toast.makeText(this, "Предоставьте доступ для отправки уведомлений", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+        );
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!getSystemService(AlarmManager.class).canScheduleExactAlarms()) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                scheduleExactAlarmPermissionLauncher.launch(intent);
+            }
+        }
         sharedPreferences = getSharedPreferences("medicine_organizer_client_user_storage", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         username = sharedPreferences.getString("username", null);
