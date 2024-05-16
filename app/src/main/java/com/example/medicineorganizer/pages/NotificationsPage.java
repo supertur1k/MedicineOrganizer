@@ -217,6 +217,8 @@ public class NotificationsPage extends AppCompatActivity implements Notification
             acceptAndDeclineButtonsContainer.setVisibility(View.VISIBLE);
             readNotification.setVisibility(View.GONE);
             notificationTextValue = String.format("Пользователь %s приглашает Вас в аптечку", adapter.getStorage().get(position).getComment().replace("system_user_invite_from", ""));
+        } else if (adapter.getStorage().get(position).getName().equals("Препарат заканчивается")) {
+            return;
         } else {
             acceptAndDeclineButtonsContainer.setVisibility(View.GONE);
             readNotification.setVisibility(View.VISIBLE);

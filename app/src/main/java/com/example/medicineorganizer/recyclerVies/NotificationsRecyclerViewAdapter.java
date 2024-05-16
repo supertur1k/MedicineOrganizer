@@ -56,6 +56,10 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
             notificationText = notificationDto.getName();
             int resourceId = layoutInflater.getContext().getResources().getIdentifier("baseline_notification_add_24", "drawable", "com.example.medicineorganizer");
             holder.notificationImage.setImageDrawable(ContextCompat.getDrawable(layoutInflater.getContext(),resourceId));
+        } else if (notificationDto.getName().equals("Препарат заканчивается")) {
+            int resourceId = layoutInflater.getContext().getResources().getIdentifier("baseline_crisis_alert_24", "drawable", "com.example.medicineorganizer");
+            holder.notificationImage.setImageDrawable(ContextCompat.getDrawable(layoutInflater.getContext(),resourceId));
+            notificationText = notificationDto.getComment();
         } else {
             notificationText = notificationDto.getName() + "\nПринять в количестве: " + notificationDto.getAmount()
                     + "\nВремя: " + notificationDto.getTime();
